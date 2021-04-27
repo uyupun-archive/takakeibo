@@ -8,3 +8,7 @@
 $ yarn install
 $ yarn dev
 ```
+
+### リンク
+
+- [Figma](https://www.figma.com/file/kOALoH5sNvMtIAhQvHTTyb/takakeibo)
