@@ -18,7 +18,6 @@ const Login = () => {
       })
       .catch(err => {
         setErrMsg('メールアドレス又はパスワードに誤りがあります。');
-        console.log(err);
       });
   };
 
