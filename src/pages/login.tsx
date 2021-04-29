@@ -1,13 +1,23 @@
 import {useState} from 'react';
+import {useRouter} from 'next/router';
+import firebase from '../lib/firebase';
 
 const Login = () => {
+  const router = useRouter();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const login = e => {
     e.preventDefault();
-    console.log(email);
-    console.log(password);
+    firebase.auth().signInWithEmailAndPassword(email, password)
+      .then(res => {
+        console.log(res);
+        router.push('/');
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
 
   return (
