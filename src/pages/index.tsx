@@ -7,16 +7,23 @@ const Index = () => {
 
   const checkIsLoggedIn = () => {
     auth.onAuthStateChanged(user => {
-      if (!user) return router.push('/');
+      if (!user) return router.push('/login');
       console.log(user);
     })
   };
+
+  const logout = e => {
+    auth.signOut();
+  }
 
   useEffect(checkIsLoggedIn, []);
 
   return (
     <div>
       <h1>トップ</h1>
+      <form onSubmit={logout}>
+        <button type="submit">ログアウト</button>
+      </form>
     </div>
   );
 };
