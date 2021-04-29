@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useRouter} from 'next/router';
 import {auth} from '../lib/firebase';
 
@@ -8,6 +8,12 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errMsg, setErrMsg] = useState(null);
+
+  const checkIsLoggedIn = () => {
+    auth.onAuthStateChanged(user => {
+      if (user) return router.push('/');
+    })
+  };
 
   const login = e => {
     e.preventDefault();
@@ -20,6 +26,8 @@ const Login = () => {
         setErrMsg('メールアドレス又はパスワードに誤りがあります。');
       });
   };
+
+  useEffect(checkIsLoggedIn, []);
 
   return (
     <div>
