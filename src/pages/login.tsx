@@ -1,21 +1,23 @@
 import {useState} from 'react';
 import {useRouter} from 'next/router';
-import firebase from '../lib/firebase';
+import {auth} from '../lib/firebase';
 
 const Login = () => {
   const router = useRouter();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errMsg, setErrMsg] = useState(null);
 
   const login = e => {
     e.preventDefault();
-    firebase.auth().signInWithEmailAndPassword(email, password)
+    auth.signInWithEmailAndPassword(email, password)
       .then(res => {
         console.log(res);
         router.push('/');
       })
       .catch(err => {
+        setErrMsg('メールアドレス又はパスワードに誤りがあります。');
         console.log(err);
       });
   };
@@ -39,6 +41,9 @@ const Login = () => {
           />
         </label>
         <button type="submit">ログイン</button>
+        {errMsg && (
+          <p>{ errMsg }</p>
+        )}
       </form>
     </div>
   )

@@ -13,10 +13,9 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
 };
 
-if (!firebase.apps.length) {
-  console.log(firebaseConfig)
+if (!firebase.apps.length)
   firebase.initializeApp(firebaseConfig);
-}
 
 export const db = firebase.firestore();
+export const auth = firebase.auth();
 export default firebase;
