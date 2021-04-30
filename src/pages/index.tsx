@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
 import {useRouter} from 'next/router';
 import {auth, db} from '../lib/firebase';
+import currency from '../utility/currency';
 
 const Index = () => {
   const router = useRouter();
@@ -104,8 +105,8 @@ const Index = () => {
               <tr key={idx}>
                 <td>{finance.traded_at}</td>
                 <td>{finance.category}</td>
-                <td>{finance.income}</td>
-                <td>{finance.expenditure}</td>
+                <td>{currency(finance.income)}</td>
+                <td>{currency(finance.expenditure)}</td>
                 <td>
                   <button type="button">編集</button>
                 </td>
