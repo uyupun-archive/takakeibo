@@ -36,6 +36,35 @@ const Index = () => {
       <form onSubmit={logout}>
         <button type="submit">ログアウト</button>
       </form>
+      <form>
+        <label>
+          日付
+          <input type="date" />
+        </label>
+        <label>
+          カテゴリ
+          <select>
+            <option>給与</option>
+            <option>食費</option>
+          </select>
+        </label>
+        <label>
+          種別
+          <select>
+            <option>収入</option>
+            <option>支出</option>
+          </select>
+        </label>
+        <label>
+          金額
+          <input type="number" />
+        </label>
+        <label>
+          備考
+          <input type="text" />
+        </label>
+        <button type="submit">追加</button>
+      </form>
       <table border="1">
         <thead>
           <tr>
@@ -43,6 +72,8 @@ const Index = () => {
             <th>カテゴリ</th>
             <th>収入</th>
             <th>支出</th>
+            <th></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -53,6 +84,12 @@ const Index = () => {
                 <td>{finance.category}</td>
                 <td>{finance.income}</td>
                 <td>{finance.expenditure}</td>
+                <td>
+                  <button type="button">編集</button>
+                </td>
+                <td>
+                  <button type="button">削除</button>
+                </td>
               </tr>
             );
           })}
