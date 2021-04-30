@@ -1,16 +1,19 @@
 import {useEffect, useState} from 'react';
 import {useRouter} from 'next/router';
 import {auth, db} from '../lib/firebase';
+import {Category} from '../models/category';
+import {Kind} from '../models/kind';
+import {Finance} from '../models/finance';
 import currency from '../utility/currency';
 
 const Index = () => {
   const router = useRouter();
   const financesCollectRef = db.collection('finances');
 
-  const [uid, setUid] = useState(null);
-  const [categories, setCategories] = useState(null);
-  const [kinds, setKinds] = useState(null);
-  const [finances, setFinances] = useState(null);
+  const [uid, setUid] = useState<string | null>(null);
+  const [categories, setCategories] = useState<Array<Category> | null>(null);
+  const [kinds, setKinds] = useState<Array<Kind> | null>(null);
+  const [finances, setFinances] = useState<Array<Finance> | null>(null);
 
   const checkIsLoggedIn = () => {
     auth.onAuthStateChanged(user => {

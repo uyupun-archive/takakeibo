@@ -5,21 +5,20 @@ import {auth} from '../lib/firebase';
 const Login = () => {
   const router = useRouter();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errMsg, setErrMsg] = useState(null);
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [errMsg, setErrMsg] = useState<string | null>(null);
 
   const checkIsLoggedIn = () => {
     auth.onAuthStateChanged(user => {
       if (user) return router.push('/');
-    })
+    });
   };
 
-  const login = e => {
+  const login = (e: {preventDefault: () => void;}) => {
     e.preventDefault();
     auth.signInWithEmailAndPassword(email, password)
       .then(res => {
-        console.log(res);
         router.push('/');
       })
       .catch(err => {
