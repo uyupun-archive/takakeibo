@@ -7,6 +7,8 @@ const Index = () => {
   const financesCollectRef = db.collection('finances');
 
   const [uid, setUid] = useState(null);
+  const [categories, setCategories] = useState(null);
+  const [kinds, setKinds] = useState(null);
   const [finances, setFinances] = useState(null);
 
   const checkIsLoggedIn = () => {
@@ -20,14 +22,28 @@ const Index = () => {
     auth.signOut();
   };
 
+  const fetchCategories = () => {
+    db.collection('categories').doc('HCRNyazYt1Fvm7CrlQP5').get().then(doc => {
+      if (doc.exists) setCategories(doc.data().payload);
+    });
+  };
+
+  const fetchKinds = () => {
+    db.collection('kinds').doc('iaI2xd2ukshFDD8IXe6j').get().then(doc => {
+      if (doc.exists) setKinds(doc.data().payload);
+    });
+  };
+
   const fetchFinances = () => {
     if (uid)
       financesCollectRef.doc(uid).get().then(doc => {
-        if (doc.exists) setFinances(doc.data().data);
+        if (doc.exists) setFinances(doc.data().payload);
       });
   };
 
   useEffect(checkIsLoggedIn, []);
+  useEffect(fetchKinds, []);
+  useEffect(fetchCategories, []);
   useEffect(fetchFinances, [uid]);
 
   return (
@@ -44,15 +60,21 @@ const Index = () => {
         <label>
           カテゴリ
           <select>
-            <option>給与</option>
-            <option>食費</option>
+            {categories && categories.map((category, idx) => {
+              return (
+                <option key={idx} value={category.name}>{category.display_name}</option>
+              )
+            })}
           </select>
         </label>
         <label>
           種別
           <select>
-            <option>収入</option>
-            <option>支出</option>
+            {kinds && kinds.map((kind, idx) => {
+              return (
+                <option key={idx} value={kind.name}>{kind.display_name}</option>
+              )
+            })}
           </select>
         </label>
         <label>
