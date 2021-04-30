@@ -6,6 +6,8 @@
 
 ```bash
 $ yarn install
+$ cp .env.example .env
+$ cp .env.local.example .env.local # その後、Firebaseの認証情報を追記する
 $ yarn dev
 ```
 
