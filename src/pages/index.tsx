@@ -107,7 +107,10 @@ const Index = () => {
             setFinance(state => ({...state, description: e.target.value}));
           }} />
         </label>
-        <button type="button" onClick={createFinance}>追加</button>
+        <button type="button" onClick={() => {
+          createFinance();
+          fetchFinances();
+        }}>追加</button>
       </form>
       <table border="1">
         <thead>
