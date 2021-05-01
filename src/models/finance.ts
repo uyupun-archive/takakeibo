@@ -8,8 +8,8 @@ export interface Finance {
 
 export const initFinance = (): Finance => {
   return {
-    category: '',
-    kind: 0,
+    category: 'salary',
+    kind: 1,
     amount: 0,
     description: '',
     traded_at: '',

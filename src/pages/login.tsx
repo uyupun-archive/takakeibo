@@ -15,8 +15,7 @@ const Login = () => {
     });
   };
 
-  const login = (e: {preventDefault: () => void;}) => {
-    e.preventDefault();
+  const login = () => {
     auth.signInWithEmailAndPassword(email, password)
       .then(res => {
         router.push('/');
@@ -31,7 +30,7 @@ const Login = () => {
   return (
     <div>
       <h1>ログイン</h1>
-      <form onSubmit={login}>
+      <form>
         <label>
           メールアドレス
           <input
@@ -46,7 +45,7 @@ const Login = () => {
             onChange={e => setPassword(e.target.value)}
           />
         </label>
-        <button type="submit">ログイン</button>
+        <button type="button" onClick={login}>ログイン</button>
         {errMsg && (
           <p>{ errMsg }</p>
         )}

@@ -1,6 +1,6 @@
 export interface Kind {
+  id: number;
   name: string;
-  display_name: string;
 };
 
 export enum KindIds {

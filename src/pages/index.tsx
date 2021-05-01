@@ -48,7 +48,7 @@ const Index = () => {
 
   const createFinance = e => {
     e.preventDefault();
-    console.log(e.target.value)
+    console.log(finance);
     // financesCollectRef.doc(uid).set({
 
     // });
@@ -62,15 +62,21 @@ const Index = () => {
   return (
     <div>
       <h1>トップ</h1>
-      <button type="submit" onClick={logout}>ログアウト</button>
-      <form onSubmit={createFinance}>
+      <button type="button" onClick={logout}>ログアウト</button>
+      <form>
         <label>
           日付
-          <input type="date" />
+          <input type="date" value={finance.traded_at} onChange={(e) => {
+            console.log(e.target.value);
+            setFinance(state => ({...state, traded_at: e.target.value}));
+          }} />
         </label>
         <label>
           カテゴリ
-          <select>
+          <select onChange={(e) => {
+            console.log(e.target.value);
+            setFinance(state => ({...state, category: e.target.value}));
+          }}>
             {categories && categories.map((category, idx) => {
               return (
                 <option key={idx} value={category.name}>{category.display_name}</option>
@@ -80,23 +86,30 @@ const Index = () => {
         </label>
         <label>
           種別
-          <select>
+          <select onChange={(e) => {
+            console.log(e.target.value);
+            setFinance(state => ({...state, kind: Number(e.target.value)}));
+          }}>
             {kinds && kinds.map((kind, idx) => {
               return (
-                <option key={idx} value={kind.name}>{kind.display_name}</option>
+                <option key={idx} value={kind.id}>{kind.name}</option>
               )
             })}
           </select>
         </label>
         <label>
           金額
-          <input type="number" />
+          <input type="number" value={finance.amount} onChange={(e) => {
+            setFinance(state => ({...state, amount: Number(e.target.value)}));
+          }} />
         </label>
         <label>
           備考
-          <input type="text" />
+          <input type="text" value={finance.description} onChange={(e) => {
+            setFinance(state => ({...state, description: e.target.value}));
+          }} />
         </label>
-        <button type="submit">追加</button>
+        <button type="button" onClick={createFinance}>追加</button>
       </form>
       <table border="1">
         <thead>
