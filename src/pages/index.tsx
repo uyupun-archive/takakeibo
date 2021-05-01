@@ -60,6 +60,12 @@ const Index = () => {
     });
   };
 
+  const convertIdToNameOfCategory = (categoryId: number): string => {
+    for (const category of categories) {
+      if (category.id === categoryId) return category.name;
+    }
+  };
+
   useEffect(checkIsLoggedIn, []);
   useEffect(fetchKinds, []);
   useEffect(fetchCategories, []);
@@ -135,7 +141,7 @@ const Index = () => {
             return (
               <tr key={idx}>
                 <td>{finance.traded_at}</td>
-                <td>{finance.category}</td>
+                <td>{convertIdToNameOfCategory(finance.category)}</td>
                 <td>{finance.kind === KindIds.Income && currency(finance.amount)}</td>
                 <td>{finance.kind === KindIds.Expenditure && currency(finance.amount)}</td>
                 <td>{finance.description}</td>
