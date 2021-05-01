@@ -2,8 +2,8 @@ import {useEffect, useState} from 'react';
 import {useRouter} from 'next/router';
 import {auth, db} from '../lib/firebase';
 import {Category} from '../models/category';
-import {Kind} from '../models/kind';
-import {Finance} from '../models/finance';
+import {Kind, KindIds} from '../models/kind';
+import {Finance, initFinance} from '../models/finance';
 import currency from '../utility/currency';
 
 const Index = () => {
@@ -14,6 +14,7 @@ const Index = () => {
   const [categories, setCategories] = useState<Array<Category> | null>(null);
   const [kinds, setKinds] = useState<Array<Kind> | null>(null);
   const [finances, setFinances] = useState<Array<Finance> | null>(null);
+  const [finance, setFinance] = useState<Finance>(initFinance());
 
   const checkIsLoggedIn = () => {
     auth.onAuthStateChanged(user => {
@@ -22,7 +23,7 @@ const Index = () => {
     });
   };
 
-  const logout = e => {
+  const logout = () => {
     auth.signOut();
   };
 
@@ -45,6 +46,14 @@ const Index = () => {
       });
   };
 
+  const createFinance = e => {
+    e.preventDefault();
+    console.log(e.target.value)
+    // financesCollectRef.doc(uid).set({
+
+    // });
+  };
+
   useEffect(checkIsLoggedIn, []);
   useEffect(fetchKinds, []);
   useEffect(fetchCategories, []);
@@ -53,10 +62,8 @@ const Index = () => {
   return (
     <div>
       <h1>トップ</h1>
-      <form onSubmit={logout}>
-        <button type="submit">ログアウト</button>
-      </form>
-      <form>
+      <button type="submit" onClick={logout}>ログアウト</button>
+      <form onSubmit={createFinance}>
         <label>
           日付
           <input type="date" />
@@ -98,6 +105,7 @@ const Index = () => {
             <th>カテゴリ</th>
             <th>収入</th>
             <th>支出</th>
+            <th>備考</th>
             <th></th>
             <th></th>
           </tr>
@@ -108,8 +116,9 @@ const Index = () => {
               <tr key={idx}>
                 <td>{finance.traded_at}</td>
                 <td>{finance.category}</td>
-                <td>{currency(finance.income)}</td>
-                <td>{currency(finance.expenditure)}</td>
+                <td>{finance.kind === KindIds.Income && currency(finance.amount)}</td>
+                <td>{finance.kind === KindIds.Expenditure && currency(finance.amount)}</td>
+                <td>{finance.description}</td>
                 <td>
                   <button type="button">編集</button>
                 </td>
