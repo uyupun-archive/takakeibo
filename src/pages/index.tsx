@@ -54,6 +54,12 @@ const Index = () => {
     });
   };
 
+  const deleteFinance = (finance: Finance) => {
+    financesCollectRef.doc(uid).update({
+      payload: firebase.firestore.FieldValue.arrayRemove(finance),
+    });
+  };
+
   useEffect(checkIsLoggedIn, []);
   useEffect(fetchKinds, []);
   useEffect(fetchCategories, []);
@@ -137,7 +143,10 @@ const Index = () => {
                   <button type="button">編集</button>
                 </td>
                 <td>
-                  <button type="button">削除</button>
+                  <button type="button" onClick={() => {
+                    deleteFinance(finance);
+                    fetchFinances();
+                  }}>削除</button>
                 </td>
               </tr>
             );
