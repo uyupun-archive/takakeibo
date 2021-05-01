@@ -6,4 +6,4 @@ export interface Kind {
 export enum KindIds {
   Income = 1,
   Expenditure,
-}
+};

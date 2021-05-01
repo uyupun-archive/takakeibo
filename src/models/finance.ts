@@ -1,5 +1,7 @@
+import {today} from '../utility/date';
 export interface Finance {
-  category: string;
+  uuid: string;
+  category: number;
   kind: number;
   amount: number;
   description: string;
@@ -8,10 +10,11 @@ export interface Finance {
 
 export const initFinance = (): Finance => {
   return {
-    category: 'salary',
+    uuid: '',
+    category: 1,
     kind: 1,
     amount: 0,
     description: '',
-    traded_at: '',
+    traded_at: today(),
   };
 };

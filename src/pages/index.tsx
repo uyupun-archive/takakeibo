@@ -1,10 +1,11 @@
 import {useEffect, useState} from 'react';
 import {useRouter} from 'next/router';
-import {auth, db} from '../lib/firebase';
+import firebase, {auth, db} from '../lib/firebase';
 import {Category} from '../models/category';
 import {Kind, KindIds} from '../models/kind';
 import {Finance, initFinance} from '../models/finance';
-import currency from '../utility/currency';
+import {currency} from '../utility/currency';
+import {uuid} from '../utility/uuid';
 
 const Index = () => {
   const router = useRouter();
@@ -46,12 +47,11 @@ const Index = () => {
       });
   };
 
-  const createFinance = e => {
-    e.preventDefault();
-    console.log(finance);
-    // financesCollectRef.doc(uid).set({
-
-    // });
+  const createFinance = () => {
+    setFinance(state => ({...state, uuid: uuid()}));
+    financesCollectRef.doc(uid).update({
+      payload: firebase.firestore.FieldValue.arrayUnion(finance),
+    });
   };
 
   useEffect(checkIsLoggedIn, []);
@@ -74,12 +74,11 @@ const Index = () => {
         <label>
           カテゴリ
           <select onChange={(e) => {
-            console.log(e.target.value);
-            setFinance(state => ({...state, category: e.target.value}));
+            setFinance(state => ({...state, category: Number(e.target.value)}));
           }}>
             {categories && categories.map((category, idx) => {
               return (
-                <option key={idx} value={category.name}>{category.display_name}</option>
+                <option key={idx} value={category.id}>{category.name}</option>
               )
             })}
           </select>
@@ -87,7 +86,6 @@ const Index = () => {
         <label>
           種別
           <select onChange={(e) => {
-            console.log(e.target.value);
             setFinance(state => ({...state, kind: Number(e.target.value)}));
           }}>
             {kinds && kinds.map((kind, idx) => {
