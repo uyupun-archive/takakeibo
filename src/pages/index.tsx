@@ -1,10 +1,11 @@
 import {useEffect, useState} from 'react';
 import {useRouter} from 'next/router';
-import firebase, {auth, db} from '../lib/firebase';
+import {auth, db} from '../lib/firebase';
 import {Category} from '../models/category';
 import {Kind, KindIds} from '../models/kind';
 import {Finance, initFinance} from '../models/finance';
 import {currency} from '../utility/currency';
+import {yearMonth} from '../utility/date';
 import {uuid} from '../utility/uuid';
 
 const Index = () => {
@@ -43,7 +44,6 @@ const Index = () => {
   const fetchFinances = () => {
     if (uid) {
       financesCollectRef.doc(uid).collection('2021-05').get().then(snapshot => {
-        console.log(snapshot)
         const finances = [];
         snapshot.forEach(doc => {
           if (doc.exists) finances.push(doc.data());
@@ -58,13 +58,12 @@ const Index = () => {
   };
 
   const createFinance = () => {
-    financesCollectRef.doc(uid).collection('2021-05').doc(finance.uuid).set(finance);
+    const subCollection = yearMonth(finance.traded_at);
+    financesCollectRef.doc(uid).collection(subCollection).doc(finance.uuid).set(finance);
   };
 
   const deleteFinance = (finance: Finance) => {
-    financesCollectRef.doc(uid).update({
-      payload: firebase.firestore.FieldValue.arrayRemove(finance),
-    });
+    financesCollectRef.doc(uid).collection(yearMonth(finance.traded_at)).doc(finance.uuid).delete();
   };
 
   const convertIdToNameOfCategory = (categoryId: number): string => {
@@ -76,6 +75,7 @@ const Index = () => {
   useEffect(checkIsLoggedIn, []);
   useEffect(fetchKinds, []);
   useEffect(fetchCategories, []);
+  useEffect(generateUuid, [finances]);
   useEffect(fetchFinances, [uid]);
 
   return (
@@ -126,7 +126,6 @@ const Index = () => {
           }} />
         </label>
         <button type="button" onClick={() => {
-          generateUuid();
           createFinance();
           fetchFinances();
         }}>追加</button>
