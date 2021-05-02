@@ -3,7 +3,7 @@ export const today = (): string => {
   return `${date.getFullYear()}-${zeroPadding(date.getMonth() + 1)}-${zeroPadding(date.getDate())}`;
 };
 
-export const yearMonth = (d: string): string => {
+export const convertYearMonth = (d: string): string => {
   const ary = d.split('-');
   return `${ary[0]}-${ary[1]}`;
 };

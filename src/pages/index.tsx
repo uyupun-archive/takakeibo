@@ -1,11 +1,11 @@
 import {useEffect, useState} from 'react';
 import {useRouter} from 'next/router';
-import {auth, db} from '../lib/firebase';
+import firebase, {auth, db} from '../lib/firebase';
 import {Category} from '../models/category';
 import {Kind, KindIds} from '../models/kind';
 import {Finance, initFinance} from '../models/finance';
 import {currency} from '../utility/currency';
-import {yearMonth} from '../utility/date';
+import {convertYearMonth} from '../utility/date';
 import {uuid} from '../utility/uuid';
 
 const Index = () => {
@@ -15,8 +15,10 @@ const Index = () => {
   const [uid, setUid] = useState<string | null>(null);
   const [categories, setCategories] = useState<Array<Category> | null>(null);
   const [kinds, setKinds] = useState<Array<Kind> | null>(null);
-  const [finances, setFinances] = useState<Array<Finance> | null>(null);
+  const [finances, setFinances] = useState<Array<Finance>>(null);
   const [finance, setFinance] = useState<Finance>(initFinance());
+  const [yearMonths, setYearMonths] = useState<Array<string> | null>(null);
+  const [yearMonth, setYearMonth] = useState<string>('');
 
   const checkIsLoggedIn = () => {
     auth.onAuthStateChanged(user => {
@@ -27,6 +29,17 @@ const Index = () => {
 
   const logout = () => {
     auth.signOut();
+  };
+
+  const fetchYearMonths = () => {
+    if (uid) {
+      financesCollectRef.doc(uid).collection('yearMonths').doc('YWlxrSN0RZIbubZDBsFs').get().then(doc => {
+        if (doc.exists) {
+          setYearMonths(doc.data().payload);
+          setYearMonth(doc.data().payload[0]);
+        }
+      });
+    }
   };
 
   const fetchCategories = () => {
@@ -42,8 +55,8 @@ const Index = () => {
   };
 
   const fetchFinances = () => {
-    if (uid) {
-      financesCollectRef.doc(uid).collection('2021-05').get().then(snapshot => {
+    if (uid && yearMonth) {
+      financesCollectRef.doc(uid).collection(yearMonth).orderBy('traded_at').get().then(snapshot => {
         const finances = [];
         snapshot.forEach(doc => {
           if (doc.exists) finances.push(doc.data());
@@ -58,12 +71,15 @@ const Index = () => {
   };
 
   const createFinance = () => {
-    const subCollection = yearMonth(finance.traded_at);
-    financesCollectRef.doc(uid).collection(subCollection).doc(finance.uuid).set(finance);
+    const ym = convertYearMonth(finance.traded_at);
+    financesCollectRef.doc(uid).collection(ym).doc(finance.uuid).set(finance);
+    financesCollectRef.doc(uid).collection('yearMonths').doc('YWlxrSN0RZIbubZDBsFs').update({
+      payload: firebase.firestore.FieldValue.arrayUnion(ym),
+    });
   };
 
   const deleteFinance = (finance: Finance) => {
-    financesCollectRef.doc(uid).collection(yearMonth(finance.traded_at)).doc(finance.uuid).delete();
+    financesCollectRef.doc(uid).collection(convertYearMonth(finance.traded_at)).doc(finance.uuid).delete();
   };
 
   const convertIdToNameOfCategory = (categoryId: number): string => {
@@ -75,8 +91,9 @@ const Index = () => {
   useEffect(checkIsLoggedIn, []);
   useEffect(fetchKinds, []);
   useEffect(fetchCategories, []);
+  useEffect(fetchYearMonths, [uid]);
+  useEffect(fetchFinances, [uid, yearMonth]);
   useEffect(generateUuid, [finances]);
-  useEffect(fetchFinances, [uid]);
 
   return (
     <div>
@@ -128,8 +145,21 @@ const Index = () => {
         <button type="button" onClick={() => {
           createFinance();
           fetchFinances();
+          fetchYearMonths();
         }}>追加</button>
       </form>
+      {yearMonths && (
+        <select onChange={(e) => {
+          setYearMonth(e.target.value);
+          fetchFinances();
+        }}>
+          {yearMonths.map((ym, idx) => {
+            return (
+              <option key={idx} value={ym}>{ym}</option>
+            )
+          })}
+        </select>
+      )}
       <table border="1">
         <thead>
           <tr>
@@ -158,6 +188,7 @@ const Index = () => {
                   <button type="button" onClick={() => {
                     deleteFinance(finance);
                     fetchFinances();
+                    fetchYearMonths();
                   }}>削除</button>
                 </td>
               </tr>
