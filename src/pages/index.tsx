@@ -41,17 +41,24 @@ const Index = () => {
   };
 
   const fetchFinances = () => {
-    if (uid)
-      financesCollectRef.doc(uid).get().then(doc => {
-        if (doc.exists) setFinances(doc.data().payload);
+    if (uid) {
+      financesCollectRef.doc(uid).collection('2021-05').get().then(snapshot => {
+        console.log(snapshot)
+        const finances = [];
+        snapshot.forEach(doc => {
+          if (doc.exists) finances.push(doc.data());
+        });
+        setFinances(finances);
       });
+    }
+  };
+
+  const generateUuid = () => {
+    setFinance(state => ({...state, uuid: uuid()}));
   };
 
   const createFinance = () => {
-    setFinance(state => ({...state, uuid: uuid()}));
-    financesCollectRef.doc(uid).update({
-      payload: firebase.firestore.FieldValue.arrayUnion(finance),
-    });
+    financesCollectRef.doc(uid).collection('2021-05').doc(finance.uuid).set(finance);
   };
 
   const deleteFinance = (finance: Finance) => {
@@ -79,7 +86,6 @@ const Index = () => {
         <label>
           日付
           <input type="date" value={finance.traded_at} onChange={(e) => {
-            console.log(e.target.value);
             setFinance(state => ({...state, traded_at: e.target.value}));
           }} />
         </label>
@@ -120,6 +126,7 @@ const Index = () => {
           }} />
         </label>
         <button type="button" onClick={() => {
+          generateUuid();
           createFinance();
           fetchFinances();
         }}>追加</button>
