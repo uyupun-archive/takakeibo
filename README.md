@@ -1,5 +1,7 @@
 <img src="logo.png" width="200px">
 
+**Easily & Simply & Immediately**
+
 ### 環境構築
 
 ```bash
