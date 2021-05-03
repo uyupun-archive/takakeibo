@@ -15,9 +15,9 @@ const Index = () => {
   const [uid, setUid] = useState<string | null>(null);
   const [categories, setCategories] = useState<Array<Category> | null>(null);
   const [kinds, setKinds] = useState<Array<Kind> | null>(null);
-  const [finances, setFinances] = useState<Array<Finance>>(null);
+  const [finances, setFinances] = useState<Array<Finance>>([]);
   const [finance, setFinance] = useState<Finance>(initFinance());
-  const [yearMonths, setYearMonths] = useState<Array<string> | null>(null);
+  const [yearMonths, setYearMonths] = useState<Array<string>>([]);
   const [yearMonth, setYearMonth] = useState<string>('');
 
   const checkIsLoggedIn = () => {
@@ -70,16 +70,16 @@ const Index = () => {
     setFinance(state => ({...state, uuid: uuid()}));
   };
 
-  const createFinance = () => {
+  const createFinance = async () => {
     const ym = convertYearMonth(finance.traded_at);
-    financesCollectRef.doc(uid).collection(ym).doc(finance.uuid).set(finance);
     financesCollectRef.doc(uid).collection('yearMonths').doc('YWlxrSN0RZIbubZDBsFs').update({
       payload: firebase.firestore.FieldValue.arrayUnion(ym),
     });
+    return await financesCollectRef.doc(uid).collection(ym).doc(finance.uuid).set(finance);
   };
 
-  const deleteFinance = (finance: Finance) => {
-    financesCollectRef.doc(uid).collection(convertYearMonth(finance.traded_at)).doc(finance.uuid).delete();
+  const deleteFinance = async (finance: Finance) => {
+    return await financesCollectRef.doc(uid).collection(convertYearMonth(finance.traded_at)).doc(finance.uuid).delete();
   };
 
   const convertIdToNameOfCategory = (categoryId: number): string => {
@@ -142,13 +142,13 @@ const Index = () => {
             setFinance(state => ({...state, description: e.target.value}));
           }} />
         </label>
-        <button type="button" onClick={() => {
-          createFinance();
+        <button type="button" onClick={async () => {
+          await createFinance();
           fetchFinances();
           fetchYearMonths();
         }}>追加</button>
       </form>
-      {yearMonths && (
+      {yearMonths.length > 0 && (
         <select onChange={(e) => {
           setYearMonth(e.target.value);
           fetchFinances();
@@ -160,42 +160,47 @@ const Index = () => {
           })}
         </select>
       )}
-      <table border="1">
-        <thead>
-          <tr>
-            <th>日付</th>
-            <th>カテゴリ</th>
-            <th>収入</th>
-            <th>支出</th>
-            <th>備考</th>
-            <th></th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {finances && finances.map((finance, idx) => {
-            return (
-              <tr key={idx}>
-                <td>{finance.traded_at}</td>
-                <td>{convertIdToNameOfCategory(finance.category)}</td>
-                <td>{finance.kind === KindIds.Income && currency(finance.amount)}</td>
-                <td>{finance.kind === KindIds.Expenditure && currency(finance.amount)}</td>
-                <td>{finance.description}</td>
-                <td>
-                  <button type="button">編集</button>
-                </td>
-                <td>
-                  <button type="button" onClick={() => {
-                    deleteFinance(finance);
-                    fetchFinances();
-                    fetchYearMonths();
-                  }}>削除</button>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      {finances.length > 0 && (
+        <table border="1">
+          <thead>
+            <tr>
+              <th>日付</th>
+              <th>カテゴリ</th>
+              <th>収入</th>
+              <th>支出</th>
+              <th>備考</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {finances && finances.map((finance, idx) => {
+              return (
+                <tr key={idx}>
+                  <td>{finance.traded_at}</td>
+                  <td>{convertIdToNameOfCategory(finance.category)}</td>
+                  <td>{finance.kind === KindIds.Income && currency(finance.amount)}</td>
+                  <td>{finance.kind === KindIds.Expenditure && currency(finance.amount)}</td>
+                  <td>{finance.description}</td>
+                  <td>
+                    <button type="button">編集</button>
+                  </td>
+                  <td>
+                    <button type="button" onClick={async () => {
+                      await deleteFinance(finance);
+                      fetchFinances();
+                      fetchYearMonths();
+                    }}>削除</button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
+      {finances.length <= 0 && (
+        <p>該当するデータがありません。</p>
+      )}
     </div>
   );
 };
