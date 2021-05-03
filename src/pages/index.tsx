@@ -43,14 +43,22 @@ const Index = () => {
   };
 
   const fetchCategories = () => {
-    db.collection('categories').doc('HCRNyazYt1Fvm7CrlQP5').get().then(doc => {
-      if (doc.exists) setCategories(doc.data().payload);
+    db.collection('categories').get().then(snapshot => {
+      const categories = [];
+      snapshot.forEach(doc => {
+        if (doc.exists) categories.push(doc.data());
+      });
+      setCategories(categories);
     });
   };
 
   const fetchKinds = () => {
-    db.collection('kinds').doc('iaI2xd2ukshFDD8IXe6j').get().then(doc => {
-      if (doc.exists) setKinds(doc.data().payload);
+    db.collection('kinds').get().then(snapshot => {
+      const kinds = [];
+      snapshot.forEach(doc => {
+        if (doc.exists) kinds.push(doc.data());
+      });
+      setKinds(kinds);
     });
   };
 
