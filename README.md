@@ -1,6 +1,4 @@
-# takakeibo
-
-家計簿アプリ『たかしのカケイボ』
+<img src="logo.png" width="200px">
 
 ### 環境構築
 
