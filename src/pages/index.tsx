@@ -72,21 +72,22 @@ const Index = () => {
 
   const createFinance = async () => {
     const ym = convertYearMonth(finance.traded_at);
-    financesCollectRef.doc(uid).collection('yearMonths').doc('YWlxrSN0RZIbubZDBsFs').update({
+    const res = await financesCollectRef.doc(uid).collection(ym).doc(finance.uuid).set(finance);
+    await financesCollectRef.doc(uid).collection('yearMonths').doc('YWlxrSN0RZIbubZDBsFs').update({
       payload: firebase.firestore.FieldValue.arrayUnion(ym),
     });
-    return await financesCollectRef.doc(uid).collection(ym).doc(finance.uuid).set(finance);
+    return res;
   };
 
-  const deleteFinance = (finance: Finance) => {
+  const deleteFinance = async (finance: Finance) => {
     const ym = convertYearMonth(finance.traded_at);
-    return financesCollectRef.doc(uid).collection(ym).doc(finance.uuid).delete().then(res => {
-      financesCollectRef.doc(uid).collection(ym).get().then(res => {
-        if (res.docs.length <= 0) financesCollectRef.doc(uid).collection('yearMonths').doc('YWlxrSN0RZIbubZDBsFs').update({
-          payload: firebase.firestore.FieldValue.arrayRemove(ym),
-        });
+    const res = await financesCollectRef.doc(uid).collection(ym).doc(finance.uuid).delete();
+    const c = await financesCollectRef.doc(uid).collection(ym).get()
+    if (c.docs.length <= 0)
+      await financesCollectRef.doc(uid).collection('yearMonths').doc('YWlxrSN0RZIbubZDBsFs').update({
+        payload: firebase.firestore.FieldValue.arrayRemove(ym),
       });
-    });
+    return res;
   };
 
   const convertIdToNameOfCategory = (categoryId: number): string => {
