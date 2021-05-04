@@ -177,7 +177,7 @@ const Index = () => {
         </select>
       )}
       {finances.length > 0 && (
-        <table border="1">
+        <table>
           <thead>
             <tr>
               <th>日付</th>

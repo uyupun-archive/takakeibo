@@ -11,6 +11,12 @@ $ cp .env.local.example .env.local # その後、Firebaseの認証情報を追�
 $ yarn dev
 ```
 
+### 本番環境
+
+```bash
+$ yarn build
+```
+
 ### リンク
 
 - [Figma](https://www.figma.com/file/kOALoH5sNvMtIAhQvHTTyb/takakeibo)
