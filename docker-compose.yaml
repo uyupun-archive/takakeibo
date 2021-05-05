@@ -9,6 +9,7 @@ services:
       - 8080:80
     volumes:
       - ./docker/nginx/conf.d:/etc/nginx/conf.d
+      - ./docker/nginx/.htpasswd:/etc/nginx/.htpasswd
     depends_on:
       - express
 
