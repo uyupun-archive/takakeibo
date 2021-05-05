@@ -14,7 +14,7 @@ $ yarn dev
 ### 本番環境
 
 ```bash
-$ yarn build
+$ docker-compose up -d # 8080番ポートで待ち受け
 ```
 
 ### リンク
