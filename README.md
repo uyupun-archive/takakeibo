@@ -13,7 +13,7 @@ $ yarn dev
 
 ### 本番環境
 
-- ベーシック認証
+- Basic認証
   - ID: uyupun
   - パスワード: takashiasuka
 
