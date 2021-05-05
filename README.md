@@ -2,7 +2,7 @@
 
 **Easily & Simply & Immediately**
 
-### 環境構築
+### 開発環境
 
 ```bash
 $ yarn install
