@@ -14,8 +14,8 @@ $ yarn dev
 ### 本番環境
 
 - Basic認証
-  - ID: uyupun
-  - パスワード: takashiasuka
+  - ID: `uyupun`
+  - パスワード: `takashiasuka`
 
 ```bash
 $ docker-compose up -d # 8080番ポートで待ち受け
