@@ -217,6 +217,10 @@ const Index = () => {
       {finances.length <= 0 && (
         <p>該当するデータがありません。</p>
       )}
+      <div>
+        <div>前月比: 赤字(-1.4%)</div>
+        <div>全財産: ￥999,999</div>
+      </div>
     </div>
   );
 };
