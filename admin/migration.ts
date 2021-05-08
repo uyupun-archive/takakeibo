@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
+import * as fs from 'fs';
 import * as admin from 'firebase-admin';
-import { firestore } from 'firebase-admin';
+import {firestore} from 'firebase-admin';
 
 class Migration {
   private db: firestore.Firestore;
@@ -44,20 +45,7 @@ class Migration {
   }
 
   private migrateRules() {
-    const src = `rules_version = '2';
-    service cloud.firestore {
-      match /databases/{database}/documents {
-        match /finances/{userId}/{document=**} {
-          allow read, write: if request.auth != null && request.auth.uid == userId;
-        }
-        match /kinds/{kindId} {
-          allow read: if true;
-        }
-        match /categories/{categoryId} {
-          allow read: if true;
-        }
-      }
-    }`;
+    const src = fs.readFileSync('./data/rules.txt', {encoding: 'utf-8'});
     admin.securityRules().releaseFirestoreRulesetFromSource(src).then(() => {
       console.log('[rules] migration succeeded!');
     }).catch(() => {
