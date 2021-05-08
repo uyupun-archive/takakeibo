@@ -12,7 +12,7 @@ const Index = () => {
   const router = useRouter();
   const financesCollectRef = db.collection('finances');
 
-  const [uid, setUid] = useState<string | null>(null);
+  const [uid, setUid] = useState<string | undefined>(undefined);
   const [categories, setCategories] = useState<Array<Category> | null>(null);
   const [kinds, setKinds] = useState<Array<Kind> | null>(null);
   const [finances, setFinances] = useState<Array<Finance>>([]);
@@ -34,19 +34,23 @@ const Index = () => {
   const fetchYearMonths = () => {
     if (uid) {
       financesCollectRef.doc(uid).collection('yearMonths').doc('YWlxrSN0RZIbubZDBsFs').get().then(doc => {
-        if (doc.exists) {
-          setYearMonths(doc.data().payload);
-          setYearMonth(doc.data().payload[0]);
-        }
+        if (!doc.exists ) return;
+        const data = doc.data();
+        if (!data) return;
+          setYearMonths(data.payload);
+          setYearMonth(data.payload[0]);
       });
     }
   };
 
   const fetchCategories = () => {
     db.collection('categories').get().then(snapshot => {
-      const categories = [];
+      const categories: Array<Category> = [];
       snapshot.forEach(doc => {
-        if (doc.exists) categories.push(doc.data());
+        if (!doc.exists) return;
+        const data = doc.data() as Category;
+        if (!data) return;
+        categories.push(data);
       });
       setCategories(categories);
     });
@@ -54,9 +58,12 @@ const Index = () => {
 
   const fetchKinds = () => {
     db.collection('kinds').get().then(snapshot => {
-      const kinds = [];
+      const kinds: Array<Kind> = [];
       snapshot.forEach(doc => {
-        if (doc.exists) kinds.push(doc.data());
+        if (!doc.exists) return;
+        const data = doc.data() as Kind;
+        if (!data) return;
+        kinds.push(data);
       });
       setKinds(kinds);
     });
@@ -65,9 +72,12 @@ const Index = () => {
   const fetchFinances = () => {
     if (uid && yearMonth) {
       financesCollectRef.doc(uid).collection(yearMonth).orderBy('traded_at').get().then(snapshot => {
-        const finances = [];
+        const finances: Array<Finance> = [];
         snapshot.forEach(doc => {
-          if (doc.exists) finances.push(doc.data());
+          if (!doc.exists) return;
+          const data = doc.data() as Finance;
+          if (!data) return;
+          finances.push(data);
         });
         setFinances(finances);
       });
@@ -99,9 +109,10 @@ const Index = () => {
   };
 
   const convertIdToNameOfCategory = (categoryId: number): string => {
-    for (const category of categories) {
+    if (!categories) return '';
+    for (const category of categories)
       if (category.id === categoryId) return category.name;
-    }
+    return '';
   };
 
   useEffect(checkIsLoggedIn, []);
