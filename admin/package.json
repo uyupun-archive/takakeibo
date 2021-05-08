@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "migrate": "npx ts-node migrate.ts"
+    "migrate": "npx ts-node migration.ts"
   },
   "dependencies": {
     "dotenv": "^9.0.0",
