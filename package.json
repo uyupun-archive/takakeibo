@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "migrate": "cd admin && npx ts-node migrate.ts"
+    "start": "next start"
   },
   "dependencies": {
     "firebase": "^8.4.2",

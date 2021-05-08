@@ -1,1 +1,3 @@
-console.log('test');
+require('dotenv').config();
+
+console.log(process.env.HOGE);
