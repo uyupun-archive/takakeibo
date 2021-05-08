@@ -17,7 +17,7 @@ class Migration {
     this.batch = this.db.batch();
   }
 
-  public migrateCategories() {
+  private migrateCategories() {
     const categories = require('./data/categories.json');
     categories.forEach((category: string, idx: number) => {
       const id = idx + 1;
@@ -30,7 +30,7 @@ class Migration {
     });
   }
 
-  public migrateKinds() {
+  private migrateKinds() {
     const kinds = require('./data/kinds.json');
     kinds.forEach((kind: string, idx: number) => {
       const id = idx + 1;
@@ -43,19 +43,43 @@ class Migration {
     });
   }
 
-  public migrateRule() {
-
+  private migrateRules() {
+    const src = `rules_version = '2';
+    service cloud.firestore {
+      match /databases/{database}/documents {
+        match /finances/{userId}/{document=**} {
+          allow read, write: if request.auth != null && request.auth.uid == userId;
+        }
+        match /kinds/{kindId} {
+          allow read: if true;
+        }
+        match /categories/{categoryId} {
+          allow read: if true;
+        }
+      }
+    }`;
+    admin.securityRules().releaseFirestoreRulesetFromSource(src).then(() => {
+      console.log('[rules] migration succeeded!');
+    }).catch(() => {
+      console.log('[rules] migration failed!');
+    });
   }
 
-  public commit() {
+  private commit() {
     this.batch.commit().then(() => {
-      console.log('migration succeeded!');
+      console.log('[categories, kinds] migration succeeded!');
     }).catch(() => {
-      console.error('migration failed!');
+      console.error('[categories, kinds] migration failed!');
     });
+  }
+
+  public migrate() {
+    migration.migrateCategories();
+    migration.migrateKinds();
+    migration.commit();
+    migration.migrateRules();
   }
 }
 
 const migration = new Migration();
-migration.migrateCategories();
-migration.migrateKinds();
+migration.migrate();
