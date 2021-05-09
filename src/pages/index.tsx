@@ -21,6 +21,7 @@ const Index = () => {
   const [yearMonths, setYearMonths] = useState<Array<YearMonth>>([]);
   const [yearMonth, setYearMonth] = useState<YearMonth | null>(null);
   const [totalSum, setTotalSum] = useState<number>(0);
+  const [balance, setBalance] = useState<number>(0);
 
   const checkIsLoggedIn = () => {
     auth.onAuthStateChanged(user => {
@@ -89,8 +90,19 @@ const Index = () => {
           finances.push(data);
         });
         setFinances(finances);
+        calcBalance(finances);
       });
     }
+  };
+
+  const calcBalance = (finances: Array<Finance>) => {
+    let income = 0;
+    let expenditure = 0;
+    for (const finance of finances) {
+      if (finance.kind === KindIds.Income) income += finance.amount;
+      if (finance.kind === KindIds.Expenditure) expenditure =+ finance.amount;
+    }
+    setBalance(income - expenditure);
   };
 
   const generateUuid = () => {
@@ -250,7 +262,9 @@ const Index = () => {
         <p>該当するデータがありません。</p>
       )}
       <div>
-        <div>収支: 赤字(-￥60,000)</div>
+        <>
+          <div>収支: {balance > 0 ? balance === 0 ? 'プラマイゼロ' : '黒字' : '赤字'}({currency(balance)})</div>
+        </>
         <div>全財産: {currency(totalSum)}</div>
       </div>
     </div>
