@@ -4,6 +4,7 @@ import firebase, {auth, db} from '../lib/firebase';
 import {Category} from '../models/category';
 import {Kind, KindIds} from '../models/kind';
 import {Finance, initFinance} from '../models/finance';
+import {YearMonth} from '../models/yearMonth';
 import {currency} from '../utility/currency';
 import {convertYearMonth} from '../utility/date';
 import {uuid} from '../utility/uuid';
@@ -17,8 +18,8 @@ const Index = () => {
   const [kinds, setKinds] = useState<Array<Kind> | null>(null);
   const [finances, setFinances] = useState<Array<Finance>>([]);
   const [finance, setFinance] = useState<Finance>(initFinance());
-  const [yearMonths, setYearMonths] = useState<Array<string>>([]);
-  const [yearMonth, setYearMonth] = useState<string>('');
+  const [yearMonths, setYearMonths] = useState<Array<YearMonth>>([]);
+  const [yearMonth, setYearMonth] = useState<YearMonth | null>(null);
   const [totalSum, setTotalSum] = useState<number>(0);
 
   const checkIsLoggedIn = () => {
@@ -35,13 +36,13 @@ const Index = () => {
   const fetchYearMonths = () => {
     if (uid) {
       financesCollectRef.doc(uid).collection('yearMonths').get().then(snapshot => {
-        const yearMonths: Array<string> = [];
+        const yearMonths: Array<YearMonth> = [];
         let totalSum: number = 0;
         snapshot.forEach(doc => {
           if (!doc.exists) return;
-          const data = doc.data();
+          const data = doc.data() as YearMonth;
           if (!data) return;
-          yearMonths.push(data.yearMonth);
+          yearMonths.push(data);
           totalSum += data.total;
         });
         setYearMonths(yearMonths);
@@ -79,7 +80,7 @@ const Index = () => {
 
   const fetchFinances = () => {
     if (uid && yearMonth) {
-      financesCollectRef.doc(uid).collection(yearMonth).orderBy('traded_at').get().then(snapshot => {
+      financesCollectRef.doc(uid).collection(yearMonth.yearMonth).orderBy('traded_at').get().then(snapshot => {
         const finances: Array<Finance> = [];
         snapshot.forEach(doc => {
           if (!doc.exists) return;
@@ -195,13 +196,14 @@ const Index = () => {
         }}>追加</button>
       </form>
       {yearMonths.length > 0 && (
-        <select onChange={(e) => {
-          setYearMonth(e.target.value);
+        <select onChange={e => {
+          const idx = Number(e.target.value)
+          setYearMonth(yearMonths[idx]);
           fetchFinances();
         }}>
           {yearMonths.map((ym, idx) => {
             return (
-              <option key={idx} value={ym}>{ym}</option>
+              <option key={idx} value={idx}>{ym.yearMonth}</option>
             )
           })}
         </select>
