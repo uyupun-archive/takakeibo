@@ -33,12 +33,16 @@ const Index = () => {
 
   const fetchYearMonths = () => {
     if (uid) {
-      financesCollectRef.doc(uid).collection('yearMonths').doc('YWlxrSN0RZIbubZDBsFs').get().then(doc => {
-        if (!doc.exists ) return;
-        const data = doc.data();
-        if (!data) return;
-          setYearMonths(data.payload);
-          setYearMonth(data.payload[0]);
+      financesCollectRef.doc(uid).collection('yearMonths').get().then(snapshot => {
+        const yearMonths: Array<string> = [];
+        snapshot.forEach(doc => {
+          if (!doc.exists) return;
+          const data = doc.data();
+          if (!data) return;
+          yearMonths.push(data.yearMonth);
+        });
+        setYearMonths(yearMonths);
+        setYearMonth(yearMonths[0]);
       });
     }
   };
@@ -91,8 +95,9 @@ const Index = () => {
   const createFinance = async () => {
     const ym = convertYearMonth(finance.traded_at);
     const res = await financesCollectRef.doc(uid).collection(ym).doc(finance.uuid).set(finance);
-    await financesCollectRef.doc(uid).collection('yearMonths').doc('YWlxrSN0RZIbubZDBsFs').update({
-      payload: firebase.firestore.FieldValue.arrayUnion(ym),
+    await financesCollectRef.doc(uid).collection('yearMonths').doc(ym).set({
+      yearMonth: ym,
+      total: 0,
     });
     return res;
   };
@@ -102,9 +107,7 @@ const Index = () => {
     const res = await financesCollectRef.doc(uid).collection(ym).doc(finance.uuid).delete();
     const c = await financesCollectRef.doc(uid).collection(ym).get()
     if (c.docs.length <= 0)
-      await financesCollectRef.doc(uid).collection('yearMonths').doc('YWlxrSN0RZIbubZDBsFs').update({
-        payload: firebase.firestore.FieldValue.arrayRemove(ym),
-      });
+      await financesCollectRef.doc(uid).collection('yearMonths').doc(ym).delete();
     return res;
   };
 
@@ -229,7 +232,7 @@ const Index = () => {
         <p>該当するデータがありません。</p>
       )}
       <div>
-        <div>前月比: 赤字(-1.4%)</div>
+        <div>収支: 赤字(-￥60,000)</div>
         <div>全財産: ￥999,999</div>
       </div>
     </div>
