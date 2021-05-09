@@ -19,6 +19,7 @@ const Index = () => {
   const [finance, setFinance] = useState<Finance>(initFinance());
   const [yearMonths, setYearMonths] = useState<Array<string>>([]);
   const [yearMonth, setYearMonth] = useState<string>('');
+  const [totalSum, setTotalSum] = useState<number>(0);
 
   const checkIsLoggedIn = () => {
     auth.onAuthStateChanged(user => {
@@ -35,14 +36,17 @@ const Index = () => {
     if (uid) {
       financesCollectRef.doc(uid).collection('yearMonths').get().then(snapshot => {
         const yearMonths: Array<string> = [];
+        let totalSum: number = 0;
         snapshot.forEach(doc => {
           if (!doc.exists) return;
           const data = doc.data();
           if (!data) return;
           yearMonths.push(data.yearMonth);
+          totalSum += data.total;
         });
         setYearMonths(yearMonths);
         setYearMonth(yearMonths[0]);
+        setTotalSum(totalSum);
       });
     }
   };
@@ -238,7 +242,7 @@ const Index = () => {
       )}
       <div>
         <div>収支: 赤字(-￥60,000)</div>
-        <div>全財産: ￥999,999</div>
+        <div>全財産: {currency(totalSum)}</div>
       </div>
     </div>
   );
