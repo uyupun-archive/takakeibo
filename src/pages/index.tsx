@@ -46,7 +46,7 @@ const Index = () => {
           yearMonths.push(data);
           totalSum += data.total;
         });
-        setYearMonths(yearMonths);
+        setYearMonths(yearMonths.reverse());
         setYearMonth(yearMonths[0]);
         setTotalSum(totalSum);
       });
