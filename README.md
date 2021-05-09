@@ -21,6 +21,10 @@ $ yarn dev
 $ docker-compose up -d # 8080番ポートで待ち受け
 ```
 
+### 使用技術
+
+<img src="tech.png" width="500px">
+
 ### リンク
 
 - [Figma](https://www.figma.com/file/kOALoH5sNvMtIAhQvHTTyb/takakeibo)
