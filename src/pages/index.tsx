@@ -95,9 +95,9 @@ const Index = () => {
   const createFinance = async () => {
     const ym = convertYearMonth(finance.traded_at);
     const res = await financesCollectRef.doc(uid).collection(ym).doc(finance.uuid).set(finance);
-    await financesCollectRef.doc(uid).collection('yearMonths').doc(ym).set({
+    await financesCollectRef.doc(uid).collection('yearMonths').doc(ym).update({
       yearMonth: ym,
-      total: 0,
+      total: firebase.firestore.FieldValue.increment(finance.amount),
     });
     return res;
   };
@@ -108,6 +108,11 @@ const Index = () => {
     const c = await financesCollectRef.doc(uid).collection(ym).get()
     if (c.docs.length <= 0)
       await financesCollectRef.doc(uid).collection('yearMonths').doc(ym).delete();
+    else
+      await financesCollectRef.doc(uid).collection('yearMonths').doc(ym).update({
+        yearMonth: ym,
+        total: firebase.firestore.FieldValue.increment(-finance.amount),
+      });
     return res;
   };
 
