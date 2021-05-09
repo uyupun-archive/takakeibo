@@ -99,17 +99,24 @@ const Index = () => {
   const createFinance = async () => {
     const ym = convertYearMonth(finance.traded_at);
     const res = await financesCollectRef.doc(uid).collection(ym).doc(finance.uuid).set(finance);
-    await financesCollectRef.doc(uid).collection('yearMonths').doc(ym).update({
-      yearMonth: ym,
-      total: firebase.firestore.FieldValue.increment(finance.amount),
-    });
+    const d = await financesCollectRef.doc(uid).collection('yearMonths').doc(ym).get();
+    if (d.exists)
+      await financesCollectRef.doc(uid).collection('yearMonths').doc(ym).update({
+        yearMonth: ym,
+        total: firebase.firestore.FieldValue.increment(finance.amount),
+      });
+    else
+      await financesCollectRef.doc(uid).collection('yearMonths').doc(ym).set({
+        yearMonth: ym,
+        total: finance.amount,
+      });
     return res;
   };
 
   const deleteFinance = async (finance: Finance) => {
     const ym = convertYearMonth(finance.traded_at);
     const res = await financesCollectRef.doc(uid).collection(ym).doc(finance.uuid).delete();
-    const c = await financesCollectRef.doc(uid).collection(ym).get()
+    const c = await financesCollectRef.doc(uid).collection(ym).get();
     if (c.docs.length <= 0)
       await financesCollectRef.doc(uid).collection('yearMonths').doc(ym).delete();
     else
