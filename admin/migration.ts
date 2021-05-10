@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import * as fs from 'fs';
 import * as admin from 'firebase-admin';
 import {firestore} from 'firebase-admin';
+import {Category} from './models/category';
 
 class Migration {
   private db: firestore.Firestore;
@@ -9,7 +10,9 @@ class Migration {
 
   constructor() {
     dotenv.config();
-    const serviceAccount = require('./serviceAccountKey.json');
+    let serviceAccount = require('./serviceAccountKeyDev.json');
+    if (process.env.ENV === 'production')
+      serviceAccount = require('./serviceAccountKeyProd.json');
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
       databaseURL: process.env.DATABASE_URL
@@ -19,15 +22,11 @@ class Migration {
   }
 
   private migrateCategories() {
-    const categories = require('./data/categories.json');
-    categories.forEach((category: string, idx: number) => {
-      const id = idx + 1;
-      const ref = this.db.collection('categories').doc(`${id}`);
-      this.batch.set(ref, {
-        id,
-        name: category
-      });
-      console.log(`[categories] ${id}: ${category}`);
+    const categories: Array<Category> = require('./data/categories.json');
+    categories.forEach((category: Category) => {
+      const ref = this.db.collection('categories').doc(`${category.id}`);
+      this.batch.set(ref, category);
+      console.log(`[categories] ${category.id}: ${category.name}`);
     });
   }
 
