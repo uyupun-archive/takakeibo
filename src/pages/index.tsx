@@ -108,16 +108,18 @@ const Index = () => {
   const createFinance = async () => {
     const ym = convertYearMonth(finance.traded_at);
     const res = await financesCollectRef.doc(uid).collection(ym).doc(finance.uuid).set(finance);
-    const d = await financesCollectRef.doc(uid).collection('yearMonths').doc(ym).get();
+    const yearMonthsDocRef = financesCollectRef.doc(uid).collection('yearMonths').doc(ym);
+    const d = await yearMonthsDocRef.get();
+    const amount = finance.kind === Kinds.Expenditure ? -finance.amount : finance.amount;
     if (d.exists)
-      await financesCollectRef.doc(uid).collection('yearMonths').doc(ym).update({
+      await yearMonthsDocRef.update({
         yearMonth: ym,
-        total: firebase.firestore.FieldValue.increment(finance.amount),
+        total: firebase.firestore.FieldValue.increment(amount),
       });
     else
-      await financesCollectRef.doc(uid).collection('yearMonths').doc(ym).set({
+      await yearMonthsDocRef.set({
         yearMonth: ym,
-        total: finance.amount,
+        total: amount,
       });
     return res;
   };
@@ -126,12 +128,13 @@ const Index = () => {
     const ym = convertYearMonth(finance.traded_at);
     const res = await financesCollectRef.doc(uid).collection(ym).doc(finance.uuid).delete();
     const c = await financesCollectRef.doc(uid).collection(ym).get();
+    const amount = finance.kind === Kinds.Income ? -finance.amount : finance.amount;
     if (c.docs.length <= 0)
       await financesCollectRef.doc(uid).collection('yearMonths').doc(ym).delete();
     else
       await financesCollectRef.doc(uid).collection('yearMonths').doc(ym).update({
         yearMonth: ym,
-        total: firebase.firestore.FieldValue.increment(-finance.amount),
+        total: firebase.firestore.FieldValue.increment(amount),
       });
     return res;
   };
