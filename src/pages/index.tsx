@@ -61,6 +61,10 @@ const Index = () => {
         if (!data) return;
         categories.push(data);
       });
+      categories.sort((a, b) => {
+        if (a.id > b.id) return 1;
+        return -1;
+      });
       setCategories(categories);
     });
   };
