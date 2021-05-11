@@ -30,19 +30,6 @@ class Migration {
     });
   }
 
-  private migrateKinds() {
-    const kinds = require('./data/kinds.json');
-    kinds.forEach((kind: string, idx: number) => {
-      const id = idx + 1;
-      const ref = this.db.collection('kinds').doc(`${id}`);
-      this.batch.set(ref, {
-        id,
-        name: kind
-      });
-      console.log(`[kinds] ${id}: ${kind}`);
-    });
-  }
-
   private migrateRules() {
     const src = fs.readFileSync('./data/rules.txt', {encoding: 'utf-8'});
     admin.securityRules().releaseFirestoreRulesetFromSource(src).then(() => {
@@ -54,15 +41,14 @@ class Migration {
 
   private commit() {
     this.batch.commit().then(() => {
-      console.log('[categories, kinds] migration succeeded!');
+      console.log('[categories] migration succeeded!');
     }).catch(() => {
-      console.error('[categories, kinds] migration failed!');
+      console.error('[categories] migration failed!');
     });
   }
 
   public migrate() {
     migration.migrateCategories();
-    migration.migrateKinds();
     migration.commit();
     migration.migrateRules();
   }

@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import {useRouter} from 'next/router';
 import firebase, {auth, db} from '../lib/firebase';
 import {Category} from '../models/category';
-import {Kind, KindIds} from '../models/kind';
+import {Kinds} from '../models/kinds';
 import {Finance, initFinance} from '../models/finance';
 import {YearMonth} from '../models/yearMonth';
 import {currency} from '../utility/currency';
@@ -14,8 +14,7 @@ const Index = () => {
   const financesCollectRef = db.collection('finances');
 
   const [uid, setUid] = useState<string | undefined>(undefined);
-  const [categories, setCategories] = useState<Array<Category> | null>(null);
-  const [kinds, setKinds] = useState<Array<Kind> | null>(null);
+  const [categories, setCategories] = useState<Array<Category>>([]);
   const [finances, setFinances] = useState<Array<Finance>>([]);
   const [finance, setFinance] = useState<Finance>(initFinance());
   const [yearMonths, setYearMonths] = useState<Array<YearMonth>>([]);
@@ -66,19 +65,6 @@ const Index = () => {
     });
   };
 
-  const fetchKinds = () => {
-    db.collection('kinds').get().then(snapshot => {
-      const kinds: Array<Kind> = [];
-      snapshot.forEach(doc => {
-        if (!doc.exists) return;
-        const data = doc.data() as Kind;
-        if (!data) return;
-        kinds.push(data);
-      });
-      setKinds(kinds);
-    });
-  };
-
   const fetchFinances = () => {
     if (uid && yearMonth) {
       financesCollectRef.doc(uid).collection(yearMonth.yearMonth).orderBy('traded_at').get().then(snapshot => {
@@ -99,8 +85,8 @@ const Index = () => {
     let income = 0;
     let expenditure = 0;
     for (const finance of finances) {
-      if (finance.kind === KindIds.Income) income += finance.amount;
-      if (finance.kind === KindIds.Expenditure) expenditure =+ finance.amount;
+      if (finance.kind === Kinds.Income) income += finance.amount;
+      if (finance.kind === Kinds.Expenditure) expenditure =+ finance.amount;
     }
     setBalance(income - expenditure);
   };
@@ -148,7 +134,6 @@ const Index = () => {
   };
 
   useEffect(checkIsLoggedIn, []);
-  useEffect(fetchKinds, []);
   useEffect(fetchCategories, []);
   useEffect(fetchYearMonths, [uid]);
   useEffect(fetchFinances, [uid, yearMonth]);
@@ -168,23 +153,13 @@ const Index = () => {
         <label>
           カテゴリ
           <select onChange={(e) => {
-            setFinance(state => ({...state, category: Number(e.target.value)}));
+            const idx = Number(e.target.value);
+            setFinance(state => ({...state, category: categories[idx].id}));
+            setFinance(state => ({...state, kind: categories[idx].kind}));
           }}>
-            {categories && categories.map((category, idx) => {
+            {categories.length > 0 && categories.map((category, idx) => {
               return (
-                <option key={idx} value={category.id}>{category.name}</option>
-              )
-            })}
-          </select>
-        </label>
-        <label>
-          種別
-          <select onChange={(e) => {
-            setFinance(state => ({...state, kind: Number(e.target.value)}));
-          }}>
-            {kinds && kinds.map((kind, idx) => {
-              return (
-                <option key={idx} value={kind.id}>{kind.name}</option>
+                <option key={idx} value={idx}>{category.name}</option>
               )
             })}
           </select>
@@ -239,8 +214,8 @@ const Index = () => {
                 <tr key={idx}>
                   <td>{finance.traded_at}</td>
                   <td>{convertIdToNameOfCategory(finance.category)}</td>
-                  <td>{finance.kind === KindIds.Income && currency(finance.amount)}</td>
-                  <td>{finance.kind === KindIds.Expenditure && currency(finance.amount)}</td>
+                  <td>{finance.kind === Kinds.Income && currency(finance.amount)}</td>
+                  <td>{finance.kind === Kinds.Expenditure && currency(finance.amount)}</td>
                   <td>{finance.description}</td>
                   <td>
                     <button type="button">編集</button>
