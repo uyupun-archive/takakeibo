@@ -59,7 +59,6 @@ const Index = () => {
         if (!doc.exists) return;
         const data = doc.data() as Category;
         if (!data) return;
-        data.name = overwriteCategoryName(data.name, data.kind, data.type);
         categories.push(data);
       });
       setCategories(categories);
@@ -166,7 +165,7 @@ const Index = () => {
           }}>
             {categories.length > 0 && categories.map((category, idx) => {
               return (
-                <option key={idx} value={idx}>{category.name}</option>
+                <option key={idx} value={idx}>{overwriteCategoryName(category.name, category.kind, category.type)}</option>
               )
             })}
           </select>
