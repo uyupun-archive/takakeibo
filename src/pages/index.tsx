@@ -59,11 +59,18 @@ const Index = () => {
         if (!doc.exists) return;
         const data = doc.data() as Category;
         if (!data) return;
+        data.name = overwriteCategoryName(data.name, data.kind, data.type);
         categories.push(data);
       });
       setCategories(categories);
     });
   };
+
+  const overwriteCategoryName = (name: string, kind: number, type: string): string => {
+    if (kind === Kinds.Income) return `${name} [収入]`;
+    if (kind === Kinds.Expenditure) return `${name} [支出 - ${type}]`;
+    return name;
+  }
 
   const fetchFinances = () => {
     if (uid && yearMonth) {
