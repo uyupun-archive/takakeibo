@@ -1,4 +1,4 @@
-<img src="logo.png" width="200px">
+<img src="public/logo.png" width="200px">
 
 **Easily & Simply & Immediately**
 
