@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
 import {useRouter} from 'next/router';
 import {auth} from '../lib/firebase';
+import Image from 'next/image'
 
 const Login = () => {
   const router = useRouter();
@@ -29,6 +30,8 @@ const Login = () => {
 
   return (
     <div>
+      {/* logo.pngの整数比 209 : 191 */}
+      <Image src="/logo.png" width="418" height="382" />
       <h1>ログイン</h1>
       <form>
         <label>
