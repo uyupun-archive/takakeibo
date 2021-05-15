@@ -29,26 +29,37 @@ const Login = () => {
   useEffect(checkIsLoggedIn, []);
 
   return (
-    <div>
-      {/* logo.pngの整数比 209 : 191 */}
-      <Image src="/logo.png" width="418" height="382" />
-      <h1>ログイン</h1>
+    <div className="container mx-auto pt-4 px-4">
+      <div className="text-center mb-16">
+        {/* logo.pngの整数比 209 : 191 */}
+        <Image src="/logo.png" width="418" height="382" />
+      </div>
       <form>
-        <label>
-          メールアドレス
+        <label className="flex justify-between items-center mb-4">
+          <span className="w-48 whitespace-nowrap">メールアドレス</span>
           <input
             type="text"
+            className="w-full rounded"
             onChange={e => setEmail(e.target.value)}
           />
         </label>
-        <label>
-          パスワード
+        <label className="flex justify-between items-center mb-8">
+          <span className="w-48 whitespace-nowrap">パスワード</span>
           <input
             type="password"
+            className="w-full rounded"
             onChange={e => setPassword(e.target.value)}
           />
         </label>
-        <button type="button" onClick={login}>ログイン</button>
+        <div className="text-center">
+          <button
+            type="button"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-16 rounded"
+            onClick={login}
+          >
+              ログイン
+          </button>
+        </div>
         {errMsg && (
           <p>{ errMsg }</p>
         )}
