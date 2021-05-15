@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
 import {useRouter} from 'next/router';
 import {auth} from '../lib/firebase';
+import Image from 'next/image'
 
 const Login = () => {
   const router = useRouter();
@@ -28,24 +29,36 @@ const Login = () => {
   useEffect(checkIsLoggedIn, []);
 
   return (
-    <div>
-      <h1>ログイン</h1>
-      <form>
-        <label>
-          メールアドレス
+    <div className="container mx-auto pt-8 px-4">
+      <div className="text-center mb-16">
+        <Image src="/logo.png" width="209" height="191" />
+      </div>
+      <form className="max-w-2xl mx-auto">
+        <label className="flex justify-between items-center mb-4">
+          <span className="w-48 whitespace-nowrap">メールアドレス</span>
           <input
             type="text"
+            className="w-full rounded"
             onChange={e => setEmail(e.target.value)}
           />
         </label>
-        <label>
-          パスワード
+        <label className="flex justify-between items-center mb-8">
+          <span className="w-48 whitespace-nowrap">パスワード</span>
           <input
             type="password"
+            className="w-full rounded"
             onChange={e => setPassword(e.target.value)}
           />
         </label>
-        <button type="button" onClick={login}>ログイン</button>
+        <div className="text-center">
+          <button
+            type="button"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-16 rounded"
+            onClick={login}
+          >
+              ログイン
+          </button>
+        </div>
         {errMsg && (
           <p>{ errMsg }</p>
         )}
