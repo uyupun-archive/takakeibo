@@ -31,10 +31,9 @@ const Login = () => {
   return (
     <div className="container mx-auto pt-8 px-4">
       <div className="text-center mb-16">
-        {/* logo.pngの整数比 209 : 191 */}
         <Image src="/logo.png" width="209" height="191" />
       </div>
-      <form>
+      <form className="max-w-2xl mx-auto">
         <label className="flex justify-between items-center mb-4">
           <span className="w-48 whitespace-nowrap">メールアドレス</span>
           <input
