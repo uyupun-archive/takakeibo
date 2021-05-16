@@ -153,9 +153,29 @@ const Index = () => {
   useEffect(generateUuid, [finances]);
 
   return (
-    <div>
-      <h1>トップ</h1>
-      <button type="button" onClick={logout}>ログアウト</button>
+    <div className="container mx-auto pt-8 px-4">
+      <div className="flex justify-between items-center mb-4">
+        {yearMonths.length > 0 && (
+          <div>
+            表示年月
+            <select
+              className="rounded ml-3"
+              onChange={e => {
+                const idx = Number(e.target.value)
+                setYearMonth(yearMonths[idx]);
+                fetchFinances();
+              }}
+            >
+              {yearMonths.map((ym, idx) => {
+                return (
+                  <option key={idx} value={idx}>{ym.yearMonth}</option>
+                )
+              })}
+            </select>
+          </div>
+        )}
+        <button type="button" className="inline-block ml-auto" onClick={logout}>ログアウト</button>
+      </div>
       <form>
         <label>
           日付
@@ -195,21 +215,8 @@ const Index = () => {
           fetchYearMonths();
         }}>追加</button>
       </form>
-      {yearMonths.length > 0 && (
-        <select onChange={e => {
-          const idx = Number(e.target.value)
-          setYearMonth(yearMonths[idx]);
-          fetchFinances();
-        }}>
-          {yearMonths.map((ym, idx) => {
-            return (
-              <option key={idx} value={idx}>{ym.yearMonth}</option>
-            )
-          })}
-        </select>
-      )}
       {finances.length > 0 && (
-        <table>
+        <table className="table-auto w-full mb-8">
           <thead>
             <tr>
               <th>日付</th>
@@ -225,10 +232,10 @@ const Index = () => {
             {finances && finances.map((finance, idx) => {
               return (
                 <tr key={idx}>
-                  <td>{finance.traded_at}</td>
-                  <td>{convertIdToNameOfCategory(finance.category)}</td>
-                  <td>{finance.kind === Kinds.Income && currency(finance.amount)}</td>
-                  <td>{finance.kind === Kinds.Expenditure && currency(finance.amount)}</td>
+                  <td className="text-center pt-2">{finance.traded_at}</td>
+                  <td className="text-center pt-2">{convertIdToNameOfCategory(finance.category)}</td>
+                  <td className="text-right pt-2">{finance.kind === Kinds.Income && currency(finance.amount)}</td>
+                  <td className="text-right pt-2">{finance.kind === Kinds.Expenditure && currency(finance.amount)}</td>
                   <td>{finance.description}</td>
                   <td>
                     <button type="button">編集</button>
@@ -249,11 +256,18 @@ const Index = () => {
       {finances.length <= 0 && (
         <p>該当するデータがありません。</p>
       )}
-      <div>
-        <>
-          <div>収支: {balance > 0 ? balance === 0 ? 'プラマイゼロ' : '黒字' : '赤字'}({currency(balance)})</div>
-        </>
-        <div>全財産: {currency(totalSum)}</div>
+      <div className="text-right">
+        <div>
+          収支:&nbsp;
+          <span className={balance < 0 ? 'text-red-500' : undefined}>{balance > 0 ? balance === 0 ? 'プラマイゼロ' : '黒字' : '赤字'}</span>
+          (
+          <span className={balance < 0 ? 'text-red-500' : undefined}>{currency(balance)}</span>
+          )
+        </div>
+        <div>
+          全財産:&nbsp;
+          <span className={totalSum < 0 ? 'text-red-500' : undefined}>{currency(totalSum)}</span>
+        </div>
       </div>
     </div>
   );
