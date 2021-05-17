@@ -174,7 +174,7 @@ const Index = () => {
             </select>
           </div>
         )}
-        <button type="button" className="inline-block ml-auto" onClick={logout}>ログアウト</button>
+        <button type="button" className="inline-block text-blue-400 underline ml-auto" onClick={logout}>ログアウト</button>
       </div>
       <form>
         <label>
