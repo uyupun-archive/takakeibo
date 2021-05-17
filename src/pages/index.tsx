@@ -152,7 +152,7 @@ const Index = () => {
       return (
         <Fragment key={idx}>
           <tr
-            className={selectedRowIdx === idx ? 'bg-blue-50' : ''}
+            className={selectedRowIdx === idx ? 'cursor-pointer bg-blue-50' : 'cursor-pointer'}
             onClick={() => {
               if (selectedRowIdx === idx) setSelectedRowIdx(null);
               else setSelectedRowIdx(idx);
@@ -212,6 +212,8 @@ const Index = () => {
   useEffect(fetchYearMonths, [uid]);
   useEffect(fetchFinances, [uid, yearMonth]);
   useEffect(generateUuid, [finances]);
+
+  console.log(categories)
 
   return (
     <div className="container mx-auto pt-8 px-4">
@@ -298,7 +300,9 @@ const Index = () => {
       <div className="text-right">
         <div>
           収支:&nbsp;
-          <span className={balance < 0 ? 'text-red-500' : undefined}>{balance > 0 ? balance === 0 ? 'プラマイゼロ' : '黒字' : '赤字'}</span>
+          <span className={balance < 0 ? 'text-red-500' : undefined}>
+            {balance > 0 ? balance === 0 ? 'プラマイゼロ' : '黒字' : '赤字'}
+          </span>
           (
           <span className={balance < 0 ? 'text-red-500' : undefined}>{currency(balance)}</span>
           )
