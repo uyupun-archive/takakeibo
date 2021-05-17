@@ -97,7 +97,7 @@ const Index = () => {
     let expenditure = 0;
     for (const finance of finances) {
       if (finance.kind === Kinds.Income) income += finance.amount;
-      if (finance.kind === Kinds.Expenditure) expenditure =+ finance.amount;
+      if (finance.kind === Kinds.Expenditure) expenditure += finance.amount;
     }
     setBalance(income - expenditure);
   };
