@@ -6,8 +6,10 @@ import {Kinds} from '../models/kinds';
 import {Finance, initFinance} from '../models/finance';
 import {YearMonth} from '../models/yearMonth';
 import {currency} from '../utility/currency';
-import {convertYearMonth, convertMonthDay} from '../utility/date';
+import {convertYearMonth} from '../utility/date';
 import {uuid} from '../utility/uuid';
+import {Table} from '../components/table';
+import {Button} from '../components/button';
 
 const Index = () => {
   const router = useRouter();
@@ -21,7 +23,6 @@ const Index = () => {
   const [yearMonth, setYearMonth] = useState<YearMonth | null>(null);
   const [totalSum, setTotalSum] = useState<number>(0);
   const [balance, setBalance] = useState<number>(0);
-  const [selectedRowIdx, setSelectedRowIdx] = useState<number | null>(null);
 
   const checkIsLoggedIn = () => {
     auth.onAuthStateChanged(user => {
@@ -140,80 +141,17 @@ const Index = () => {
     return res;
   };
 
-  const convertIdToNameOfCategory = (categoryId: number): string => {
-    if (!categories) return '';
-    for (const category of categories)
-      if (category.id === categoryId) return category.name;
-    return '';
-  };
-
-  const showTableRow = () => {
-    return finances.map((finance, idx) => {
-      return (
-        <Fragment key={idx}>
-          <tr
-            className={selectedRowIdx === idx ? 'cursor-pointer bg-blue-50' : 'cursor-pointer'}
-            onClick={() => {
-              if (selectedRowIdx === idx) setSelectedRowIdx(null);
-              else setSelectedRowIdx(idx);
-            }}
-          >
-            {/* TODO: アイコンに変える */}
-            <td className="text-center pt-4">
-              { selectedRowIdx === idx ? '▼' : '▶︎' }
-            </td>
-            <td className="text-center pt-4">{convertMonthDay(finance.traded_at)}</td>
-            <td className="text-center pt-4">{convertIdToNameOfCategory(finance.category)}</td>
-            <td className="text-right pt-4">{finance.kind === Kinds.Income && currency(finance.amount)}</td>
-            <td className="text-right pt-4">{finance.kind === Kinds.Expenditure && currency(finance.amount)}</td>
-          </tr>
-          {
-            selectedRowIdx === idx && (
-              <tr className="bg-blue-50">
-                <td className="p-4" colSpan={5}>
-                  {
-                    finance.description && (
-                      <div className="flex mb-4">
-                        <span className="whitespace-nowrap">メモ：&nbsp;</span>
-                        <p className="break-all">{finance.description}</p>
-                      </div>
-                    )
-                  }
-                  <div className="text-right">
-                    <button
-                      type="button"
-                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-10 rounded mr-4"
-                    >
-                      編集
-                    </button>
-                    <button
-                      type="button"
-                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-10 rounded"
-                      onClick={async () => {
-                        await deleteFinance(finance);
-                        fetchFinances();
-                        fetchYearMonths();
-                      }}
-                    >
-                      削除
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            )
-          }
-        </Fragment>
-      );
-    });
-  };
+  const clickDeleteBtn = async (finance: Finance) => {
+    await deleteFinance(finance);
+    fetchFinances();
+    fetchYearMonths();
+  }
 
   useEffect(checkIsLoggedIn, []);
   useEffect(fetchCategories, []);
   useEffect(fetchYearMonths, [uid]);
   useEffect(fetchFinances, [uid, yearMonth]);
   useEffect(generateUuid, [finances]);
-
-  console.log(categories)
 
   return (
     <div className="container mx-auto pt-8 px-4">
@@ -272,31 +210,17 @@ const Index = () => {
             setFinance(state => ({...state, description: e.target.value}));
           }} />
         </label>
-        <button type="button" onClick={async () => {
+        <Button onClick={async () => {
           await createFinance();
           fetchFinances();
           fetchYearMonths();
-        }}>追加</button>
+        }}>追加</Button>
       </form>
-      {finances.length > 0 && (
-        <table className="table-fixed w-full mb-8">
-          <thead>
-            <tr>
-              <th className="w-1/12" />
-              <th className="w-2/12">日付</th>
-              <th className="w-3/12">カテゴリ</th>
-              <th className="w-3/12">収入</th>
-              <th className="w-3/12">支出</th>
-            </tr>
-          </thead>
-          <tbody>
-            {showTableRow()}
-          </tbody>
-        </table>
-      )}
-      {finances.length <= 0 && (
-        <p>該当するデータがありません。</p>
-      )}
+      <Table
+        categories={categories}
+        finances={finances}
+        clickDeleteBtn={(finance) => clickDeleteBtn(finance)}
+      />
       <div className="text-right">
         <div>
           収支:&nbsp;
