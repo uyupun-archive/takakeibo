@@ -175,7 +175,13 @@ const Index = () => {
             </select>
           </div>
         )}
-        <button type="button" className="inline-block text-blue-400 underline ml-auto" onClick={logout}>ログアウト</button>
+        <Button
+          customClass="ml-auto"
+          isLink={true}
+          onClick={logout}
+        >
+          ログアウト
+        </Button>
       </div>
       <form>
         <label>
