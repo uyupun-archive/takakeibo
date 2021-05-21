@@ -10,6 +10,7 @@ import {convertYearMonth} from '../utility/date';
 import {uuid} from '../utility/uuid';
 import {Table} from '../components/table';
 import {Button} from '../components/button';
+import {LinkButton} from '../components/linkButton'
 
 const Index = () => {
   const router = useRouter();
@@ -175,13 +176,9 @@ const Index = () => {
             </select>
           </div>
         )}
-        <Button
-          customClass="ml-auto"
-          isLink={true}
-          onClick={logout}
-        >
+        <LinkButton customClass="ml-auto" onClick={logout}>
           ログアウト
-        </Button>
+        </LinkButton>
       </div>
       <form>
         <label>

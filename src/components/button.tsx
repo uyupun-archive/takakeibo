@@ -6,25 +6,11 @@ interface Props {
   size?: 'small' | 'medium';
   color?: 'blue' | 'red' | 'gray';
   customClass?: string;
-  isLink?: boolean;
   onClick?: () => void;
 }
 
 const Button = (props: Props) => {
-  const {children, type, size, color, customClass, isLink, onClick} = props;
-
-  if (isLink) {
-    return (
-      <button
-        type="button"
-        className={`${customClass || ''} text-blue-400 underline`}
-        onClick={() => {
-          if (onClick) onClick();
-        }}
-      >
-        {children}
-      </button>)
-  }
+  const {children, type, size, color, customClass, onClick} = props;
 
   let sizeClass: string = 'px-10';
   if (size === 'medium') sizeClass = 'px-16';
