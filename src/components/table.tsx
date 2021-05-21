@@ -5,6 +5,7 @@ import {Kinds} from '../models/kinds';
 import {currency} from '../utility/currency';
 import {convertMonthDay} from '../utility/date';
 import {Button} from '../components/button';
+import {convertIdToNameOfCategory} from '../utility/category'
 
 interface Props {
   categories: Array<Category>;
@@ -19,12 +20,6 @@ const Table = (props: Props) => {
   }
 
   const [selectedRowIdx, setSelectedRowIdx] = useState<number | null>(null);
-
-  const convertIdToNameOfCategory = (categoryId: number): string => {
-    for (const category of categories)
-      if (category.id === categoryId) return category.name;
-    return '';
-  };
 
   return (
     <table className="table-fixed w-full mb-8">
@@ -54,7 +49,7 @@ const Table = (props: Props) => {
                     { selectedRowIdx === idx ? '▼' : '▶︎' }
                   </td>
                   <td className="text-center pt-4">{convertMonthDay(finance.traded_at)}</td>
-                  <td className="text-center pt-4">{convertIdToNameOfCategory(finance.category)}</td>
+                  <td className="text-center pt-4">{convertIdToNameOfCategory(categories, finance.category)}</td>
                   <td className="text-right pt-4">{finance.kind === Kinds.Income && currency(finance.amount)}</td>
                   <td className="text-right pt-4">{finance.kind === Kinds.Expenditure && currency(finance.amount)}</td>
                 </tr>
