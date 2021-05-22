@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useState, Fragment} from 'react';
 import {useRouter} from 'next/router';
 import firebase, {auth, db} from '../lib/firebase';
 import {Category} from '../models/category';
@@ -8,6 +8,9 @@ import {YearMonth} from '../models/yearMonth';
 import {currency} from '../utility/currency';
 import {convertYearMonth} from '../utility/date';
 import {uuid} from '../utility/uuid';
+import {Table} from '../components/table';
+import {Button} from '../components/button';
+import {LinkButton} from '../components/linkButton'
 
 const Index = () => {
   const router = useRouter();
@@ -96,7 +99,7 @@ const Index = () => {
     let expenditure = 0;
     for (const finance of finances) {
       if (finance.kind === Kinds.Income) income += finance.amount;
-      if (finance.kind === Kinds.Expenditure) expenditure =+ finance.amount;
+      if (finance.kind === Kinds.Expenditure) expenditure += finance.amount;
     }
     setBalance(income - expenditure);
   };
@@ -139,11 +142,14 @@ const Index = () => {
     return res;
   };
 
+  const clickDeleteBtn = async (finance: Finance) => {
+    await deleteFinance(finance);
+    fetchFinances();
+    fetchYearMonths();
+  }
+
   const convertIdToNameOfCategory = (categoryId: number): string => {
-    if (!categories) return '';
-    for (const category of categories)
-      if (category.id === categoryId) return category.name;
-    return '';
+    return (categories.find((category) => category.id === categoryId))?.name || ''
   };
 
   useEffect(checkIsLoggedIn, []);
@@ -153,9 +159,31 @@ const Index = () => {
   useEffect(generateUuid, [finances]);
 
   return (
-    <div>
-      <h1>トップ</h1>
-      <button type="button" onClick={logout}>ログアウト</button>
+    <div className="container mx-auto pt-8 px-4">
+      <div className="flex justify-between items-center mb-4">
+        {yearMonths.length > 0 && (
+          <div>
+            表示年月
+            <select
+              className="rounded ml-3"
+              onChange={e => {
+                const idx = Number(e.target.value)
+                setYearMonth(yearMonths[idx]);
+                fetchFinances();
+              }}
+            >
+              {yearMonths.map((ym, idx) => {
+                return (
+                  <option key={idx} value={idx}>{ym.yearMonth}</option>
+                )
+              })}
+            </select>
+          </div>
+        )}
+        <LinkButton customClass="ml-auto" onClick={logout}>
+          ログアウト
+        </LinkButton>
+      </div>
       <form>
         <label>
           日付
@@ -189,71 +217,31 @@ const Index = () => {
             setFinance(state => ({...state, description: e.target.value}));
           }} />
         </label>
-        <button type="button" onClick={async () => {
+        <Button onClick={async () => {
           await createFinance();
           fetchFinances();
           fetchYearMonths();
-        }}>追加</button>
+        }}>追加</Button>
       </form>
-      {yearMonths.length > 0 && (
-        <select onChange={e => {
-          const idx = Number(e.target.value)
-          setYearMonth(yearMonths[idx]);
-          fetchFinances();
-        }}>
-          {yearMonths.map((ym, idx) => {
-            return (
-              <option key={idx} value={idx}>{ym.yearMonth}</option>
-            )
-          })}
-        </select>
-      )}
-      {finances.length > 0 && (
-        <table>
-          <thead>
-            <tr>
-              <th>日付</th>
-              <th>カテゴリ</th>
-              <th>収入</th>
-              <th>支出</th>
-              <th>備考</th>
-              <th></th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {finances && finances.map((finance, idx) => {
-              return (
-                <tr key={idx}>
-                  <td>{finance.traded_at}</td>
-                  <td>{convertIdToNameOfCategory(finance.category)}</td>
-                  <td>{finance.kind === Kinds.Income && currency(finance.amount)}</td>
-                  <td>{finance.kind === Kinds.Expenditure && currency(finance.amount)}</td>
-                  <td>{finance.description}</td>
-                  <td>
-                    <button type="button">編集</button>
-                  </td>
-                  <td>
-                    <button type="button" onClick={async () => {
-                      await deleteFinance(finance);
-                      fetchFinances();
-                      fetchYearMonths();
-                    }}>削除</button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      )}
-      {finances.length <= 0 && (
-        <p>該当するデータがありません。</p>
-      )}
-      <div>
-        <>
-          <div>収支: {balance > 0 ? balance === 0 ? 'プラマイゼロ' : '黒字' : '赤字'}({currency(balance)})</div>
-        </>
-        <div>全財産: {currency(totalSum)}</div>
+      <Table
+        finances={finances}
+        clickDeleteBtn={(finance) => clickDeleteBtn(finance)}
+        convertIdToNameOfCategory={(categoryID) => convertIdToNameOfCategory(categoryID)}
+      />
+      <div className="text-right">
+        <div>
+          収支:&nbsp;
+          <span className={balance < 0 ? 'text-red-500' : undefined}>
+            {balance > 0 ? balance === 0 ? 'プラマイゼロ' : '黒字' : '赤字'}
+          </span>
+          (
+          <span className={balance < 0 ? 'text-red-500' : undefined}>{currency(balance)}</span>
+          )
+        </div>
+        <div>
+          全財産:&nbsp;
+          <span className={totalSum < 0 ? 'text-red-500' : undefined}>{currency(totalSum)}</span>
+        </div>
       </div>
     </div>
   );

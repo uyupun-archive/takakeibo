@@ -2,6 +2,7 @@ import {useEffect, useState} from 'react';
 import {useRouter} from 'next/router';
 import {auth} from '../lib/firebase';
 import Image from 'next/image'
+import {Button} from '../components/button';
 
 const Login = () => {
   const router = useRouter();
@@ -51,13 +52,12 @@ const Login = () => {
           />
         </label>
         <div className="text-center">
-          <button
-            type="button"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-16 rounded"
+          <Button
+            size="medium"
             onClick={login}
           >
               ログイン
-          </button>
+          </Button>
         </div>
         {errMsg && (
           <p>{ errMsg }</p>

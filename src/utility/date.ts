@@ -8,7 +8,12 @@ export const convertYearMonth = (d: string): string => {
   return `${ary[0]}-${ary[1]}`;
 };
 
+export const convertMonthDay = (d: string): string => {
+  const ary = d.split('-');
+  return `${ary[1]}-${ary[2]}`;
+};
+
 const zeroPadding = (n: number) => {
   if (n <= 9) return `0${n}`;
   return `${n}`;
-}
+};
