@@ -1,21 +1,19 @@
 import {useState, Fragment} from 'react';
 import {Finance} from '../models/finance';
-import {Category} from '../models/category';
 import {Kinds} from '../models/kinds';
 import {currency} from '../utility/currency';
 import {convertMonthDay} from '../utility/date';
 import {Button} from '../components/button';
-import {convertIdToNameOfCategory} from '../utility/category'
 
 interface Props {
-  categories: Array<Category>;
   finances: Array<Finance>;
   clickDeleteBtn: (finance: Finance) => void;
+  convertIdToNameOfCategory: (categoryId: number) => string;
 }
 
 const Table = (props: Props) => {
-  const { categories, finances, clickDeleteBtn } = props;
-  if (categories.length <= 0 || finances.length <= 0) {
+  const { finances, clickDeleteBtn, convertIdToNameOfCategory } = props;
+  if (finances.length <= 0) {
     return <p>該当するデータがありません。</p>;
   }
 
@@ -49,7 +47,7 @@ const Table = (props: Props) => {
                     { selectedRowIdx === idx ? '▼' : '▶︎' }
                   </td>
                   <td className="text-center pt-4">{convertMonthDay(finance.traded_at)}</td>
-                  <td className="text-center pt-4">{convertIdToNameOfCategory(categories, finance.category)}</td>
+                  <td className="text-center pt-4">{convertIdToNameOfCategory(finance.category)}</td>
                   <td className="text-right pt-4">{finance.kind === Kinds.Income && currency(finance.amount)}</td>
                   <td className="text-right pt-4">{finance.kind === Kinds.Expenditure && currency(finance.amount)}</td>
                 </tr>

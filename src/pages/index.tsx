@@ -148,6 +148,10 @@ const Index = () => {
     fetchYearMonths();
   }
 
+  const convertIdToNameOfCategory = (categoryId: number): string => {
+    return (categories.find((category) => category.id === categoryId))?.name || ''
+  };
+
   useEffect(checkIsLoggedIn, []);
   useEffect(fetchCategories, []);
   useEffect(fetchYearMonths, [uid]);
@@ -220,9 +224,9 @@ const Index = () => {
         }}>追加</Button>
       </form>
       <Table
-        categories={categories}
         finances={finances}
         clickDeleteBtn={(finance) => clickDeleteBtn(finance)}
+        convertIdToNameOfCategory={(categoryID) => convertIdToNameOfCategory(categoryID)}
       />
       <div className="text-right">
         <div>
