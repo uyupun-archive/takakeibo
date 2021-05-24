@@ -17,9 +17,9 @@ const Modal = (props: Props) => {
   if (!isVisible) return null;
 
   const ref = useRef(null);
-  let btnColor = submitBtnColor || 'blue';
-  let cancelBtnText = cancelText || 'キャンセル';
-  let submitBtnText = submitText || '確定';
+  const btnColor: string = submitBtnColor || 'blue';
+  const cancelBtnText: string = cancelText || 'キャンセル';
+  const submitBtnText: string = submitText || '確定';
 
   const onClickRef = (event: MouseEvent<HTMLDivElement>): void => {
     if (ref.current === event.target) onCancel();
