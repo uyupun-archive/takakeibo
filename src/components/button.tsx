@@ -12,8 +12,8 @@ interface Props {
 const Button = (props: Props) => {
   const {children, type, size, color, customClass, onClick} = props;
 
-  let sizeClass: string = 'px-10';
-  if (size === 'medium') sizeClass = 'px-16';
+  let sizeClass: string = 'max-w-xxxs';
+  if (size === 'medium') sizeClass = 'max-w-xxs';
 
   let colorClass: string = 'bg-blue-500 hover:bg-blue-700 focus:ring-blue-300';
   if (color === 'red') colorClass = 'bg-red-500 hover:bg-red-700 focus:ring-red-300';
@@ -22,7 +22,7 @@ const Button = (props: Props) => {
   return (
     <button
       type={type || 'button'}
-      className={`${sizeClass} ${colorClass} ${customClass || ''} text-white font-bold py-2 px-10 rounded focus:outline-none focus:ring-2`}
+      className={`${sizeClass} ${colorClass} ${customClass || ''} w-full text-white font-bold p-2 rounded focus:outline-none focus:ring-2`}
       onClick={() => {
         if (onClick) onClick();
       }}
