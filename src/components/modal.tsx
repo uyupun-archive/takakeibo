@@ -17,7 +17,7 @@ const Modal = (props: Props) => {
   if (!isVisible) return null;
 
   const ref = useRef(null);
-  const btnColor: string = submitBtnColor || 'blue';
+  const btnColor: 'blue' | 'red' = submitBtnColor || 'blue';
   const cancelBtnText: string = cancelText || 'キャンセル';
   const submitBtnText: string = submitText || '確定';
 
