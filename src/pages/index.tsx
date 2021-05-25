@@ -26,6 +26,7 @@ const Index = () => {
   const [totalSum, setTotalSum] = useState<number>(0);
   const [balance, setBalance] = useState<number>(0);
   const [isVisibleCreateFinanceModal, setIsVisibleCreateFinanceModal] = useState<boolean>(false);
+  const [isVisibleDeleteFinanceModal, setIsVisibleDeleteFinanceModal] = useState<boolean>(false);
 
   const checkIsLoggedIn = () => {
     auth.onAuthStateChanged(user => {
@@ -144,10 +145,11 @@ const Index = () => {
     return res;
   };
 
-  const clickDeleteBtn = async (finance: Finance) => {
+  const clickDeleteBtn = async () => {
     await deleteFinance(finance);
     fetchFinances();
     fetchYearMonths();
+    setIsVisibleDeleteFinanceModal(false);
   }
 
   const convertIdToNameOfCategory = (categoryId: number): string => {
@@ -169,7 +171,7 @@ const Index = () => {
 
   return (
     <div className="container mx-auto pt-8 px-4">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-8">
         {yearMonths.length > 0 && (
           <div>
             表示年月
@@ -193,14 +195,20 @@ const Index = () => {
           ログアウト
         </LinkButton>
       </div>
-      <div>
+
+      <div className="text-right mb-8">
         <Button onClick={() => setIsVisibleCreateFinanceModal(true)}>追加</Button>
       </div>
+
       <Table
         finances={finances}
-        clickDeleteBtn={(finance) => clickDeleteBtn(finance)}
+        clickDeleteBtn={(finance) => {
+          setFinance({...finance});
+          setIsVisibleDeleteFinanceModal(true);
+        }}
         convertIdToNameOfCategory={(categoryID) => convertIdToNameOfCategory(categoryID)}
       />
+
       <div className="text-right">
         <div>
           収支:&nbsp;
@@ -283,6 +291,15 @@ const Index = () => {
             />
           </label>
         </div>
+      </Modal>
+
+      <Modal
+        isVisible={isVisibleDeleteFinanceModal}
+        submitBtnColor="red"
+        onCancel={() => setIsVisibleDeleteFinanceModal(false)}
+        onSubmit={() => clickDeleteBtn()}
+      >
+        <p>削除しますか？</p>
       </Modal>
     </div>
   );
