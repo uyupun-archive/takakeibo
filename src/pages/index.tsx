@@ -10,7 +10,8 @@ import {convertYearMonth} from '../utility/date';
 import {uuid} from '../utility/uuid';
 import {Table} from '../components/table';
 import {Button} from '../components/button';
-import {LinkButton} from '../components/linkButton'
+import {LinkButton} from '../components/linkButton';
+import {Modal} from '../components/modal';
 
 const Index = () => {
   const router = useRouter();
@@ -24,6 +25,7 @@ const Index = () => {
   const [yearMonth, setYearMonth] = useState<YearMonth | null>(null);
   const [totalSum, setTotalSum] = useState<number>(0);
   const [balance, setBalance] = useState<number>(0);
+  const [isVisibleCreateFinanceModal, setIsVisibleCreateFinanceModal] = useState<boolean>(false);
 
   const checkIsLoggedIn = () => {
     auth.onAuthStateChanged(user => {
@@ -152,6 +154,13 @@ const Index = () => {
     return (categories.find((category) => category.id === categoryId))?.name || ''
   };
 
+  const clickCreateFinanceBtn = async (): Promise<void> => {
+    await createFinance();
+    fetchFinances();
+    fetchYearMonths();
+    setIsVisibleCreateFinanceModal(false);
+  };
+
   useEffect(checkIsLoggedIn, []);
   useEffect(fetchCategories, []);
   useEffect(fetchYearMonths, [uid]);
@@ -184,45 +193,9 @@ const Index = () => {
           ログアウト
         </LinkButton>
       </div>
-      <form>
-        <label>
-          日付
-          <input type="date" value={finance.traded_at} onChange={(e) => {
-            setFinance(state => ({...state, traded_at: e.target.value}));
-          }} />
-        </label>
-        <label>
-          カテゴリ
-          <select onChange={(e) => {
-            const idx = Number(e.target.value);
-            setFinance(state => ({...state, category: categories[idx].id}));
-            setFinance(state => ({...state, kind: categories[idx].kind}));
-          }}>
-            {categories.length > 0 && categories.map((category, idx) => {
-              return (
-                <option key={idx} value={idx}>{overwriteCategoryName(category.name, category.kind, category.type)}</option>
-              )
-            })}
-          </select>
-        </label>
-        <label>
-          金額
-          <input type="number" value={finance.amount} onChange={(e) => {
-            setFinance(state => ({...state, amount: Number(e.target.value)}));
-          }} />
-        </label>
-        <label>
-          備考
-          <input type="text" value={finance.description} onChange={(e) => {
-            setFinance(state => ({...state, description: e.target.value}));
-          }} />
-        </label>
-        <Button onClick={async () => {
-          await createFinance();
-          fetchFinances();
-          fetchYearMonths();
-        }}>追加</Button>
-      </form>
+      <div>
+        <Button onClick={() => setIsVisibleCreateFinanceModal(true)}>追加</Button>
+      </div>
       <Table
         finances={finances}
         clickDeleteBtn={(finance) => clickDeleteBtn(finance)}
@@ -243,6 +216,74 @@ const Index = () => {
           <span className={totalSum < 0 ? 'text-red-500' : undefined}>{currency(totalSum)}</span>
         </div>
       </div>
+
+      <Modal
+        isVisible={isVisibleCreateFinanceModal}
+        onCancel={() => setIsVisibleCreateFinanceModal(false)}
+        onSubmit={() => clickCreateFinanceBtn()}
+      >
+        <div>
+          <label className="flex justify-between item-center mb-6">
+            <span className="flex item-center w-24">
+              日付
+              <span className="text-red-500 ml-1.5">*</span>
+            </span>
+            <input
+              type="date"
+              className="flex-1 ml-10 rounded"
+              value={finance.traded_at}
+              onChange={(e) => {
+                setFinance(state => ({...state, traded_at: e.target.value}));
+              }}
+            />
+          </label>
+          <label className="flex justify-between item-center mb-6">
+            <span className="flex item-center w-24">
+              カテゴリ
+              <span className="text-red-500 ml-1.5">*</span>
+            </span>
+            <select
+              className="flex-1 ml-10 rounded"
+              onChange={(e) => {
+                const idx = Number(e.target.value);
+                setFinance(state => ({...state, category: categories[idx].id}));
+                setFinance(state => ({...state, kind: categories[idx].kind}));
+              }}
+            >
+              {categories.length > 0 && categories.map((category, idx) => {
+                return (
+                  <option key={idx} value={idx}>{overwriteCategoryName(category.name, category.kind, category.type)}</option>
+                )
+              })}
+            </select>
+          </label>
+          <label className="flex justify-between item-center mb-6">
+            <span className="flex item-center w-24">
+              金額
+              <span className="text-red-500 ml-1.5">*</span>
+            </span>
+            <input
+              type="number"
+              className="flex-1 ml-10 rounded"
+              value={finance.amount}
+              onChange={(e) => {
+                setFinance(state => ({...state, amount: Number(e.target.value)}));
+              }}
+            />
+          </label>
+          <label className="flex justify-between item-center">
+            <span className="flex item-center w-24">備考</span>
+            <input
+              type="text"
+              className="flex-1 ml-10 rounded"
+              value={finance.description}
+              onChange={(e) => {
+                setFinance(state => ({...state, description: e.target.value}));
+              }}
+            />
+          </label>
+        </div>
+      </Modal>
     </div>
   );
 };
