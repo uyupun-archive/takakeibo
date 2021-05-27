@@ -12,6 +12,7 @@ import {Table} from '../components/table';
 import {Button} from '../components/button';
 import {LinkButton} from '../components/linkButton';
 import {Modal} from '../components/modal';
+import {FormModal} from '../components/formModal'
 
 const Index = () => {
   const router = useRouter();
@@ -111,7 +112,7 @@ const Index = () => {
     setFinance(state => ({...state, uuid: uuid()}));
   };
 
-  const createFinance = async () => {
+  const createFinance = async (finance: Finance) => {
     const ym = convertYearMonth(finance.traded_at);
     const res = await financesCollectRef.doc(uid).collection(ym).doc(finance.uuid).set(finance);
     const yearMonthsDocRef = financesCollectRef.doc(uid).collection('yearMonths').doc(ym);
@@ -156,8 +157,8 @@ const Index = () => {
     return (categories.find((category) => category.id === categoryId))?.name || ''
   };
 
-  const clickCreateFinanceBtn = async (): Promise<void> => {
-    await createFinance();
+  const clickCreateFinanceBtn = async (finance: Finance): Promise<void> => {
+    await createFinance(finance);
     fetchFinances();
     fetchYearMonths();
     setIsVisibleCreateFinanceModal(false);
@@ -225,73 +226,13 @@ const Index = () => {
         </div>
       </div>
 
-      <Modal
+      <FormModal
+        finance={finance}
+        categories={categories}
         isVisible={isVisibleCreateFinanceModal}
         onCancel={() => setIsVisibleCreateFinanceModal(false)}
-        onSubmit={() => clickCreateFinanceBtn()}
-      >
-        <div>
-          <label className="flex justify-between item-center mb-6">
-            <span className="flex item-center w-24">
-              日付
-              <span className="text-red-500 ml-1.5">*</span>
-            </span>
-            <input
-              type="date"
-              className="flex-1 ml-10 rounded"
-              value={finance.traded_at}
-              onChange={(e) => {
-                setFinance(state => ({...state, traded_at: e.target.value}));
-              }}
-            />
-          </label>
-          <label className="flex justify-between item-center mb-6">
-            <span className="flex item-center w-24">
-              カテゴリ
-              <span className="text-red-500 ml-1.5">*</span>
-            </span>
-            <select
-              className="flex-1 ml-10 rounded"
-              onChange={(e) => {
-                const idx = Number(e.target.value);
-                setFinance(state => ({...state, category: categories[idx].id}));
-                setFinance(state => ({...state, kind: categories[idx].kind}));
-              }}
-            >
-              {categories.length > 0 && categories.map((category, idx) => {
-                return (
-                  <option key={idx} value={idx}>{overwriteCategoryName(category.name, category.kind, category.type)}</option>
-                )
-              })}
-            </select>
-          </label>
-          <label className="flex justify-between item-center mb-6">
-            <span className="flex item-center w-24">
-              金額
-              <span className="text-red-500 ml-1.5">*</span>
-            </span>
-            <input
-              type="number"
-              className="flex-1 ml-10 rounded"
-              value={finance.amount}
-              onChange={(e) => {
-                setFinance(state => ({...state, amount: Number(e.target.value)}));
-              }}
-            />
-          </label>
-          <label className="flex justify-between item-center">
-            <span className="flex item-center w-24">備考</span>
-            <input
-              type="text"
-              className="flex-1 ml-10 rounded"
-              value={finance.description}
-              onChange={(e) => {
-                setFinance(state => ({...state, description: e.target.value}));
-              }}
-            />
-          </label>
-        </div>
-      </Modal>
+        onSubmit={(finance: Finance) => clickCreateFinanceBtn(finance)}
+      />
 
       <Modal
         isVisible={isVisibleDeleteFinanceModal}
