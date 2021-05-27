@@ -16,9 +16,10 @@ interface Props {
 }
 
 const FormModal = (props: Props) => {
-  if (!props.finance.uuid || !props.categories.length) return null;
-
   const {categories, isVisible, cancelText, submitText, submitBtnColor, onCancel, onSubmit} = props;
+
+  if (!props.finance.uuid || !categories.length || !isVisible) return null;
+
   const [finance, setFinance] = useState<Finance>(props.finance);
 
   const overwriteCategoryName = (name: string, kind: number, type: string): string => {
@@ -58,15 +59,18 @@ const FormModal = (props: Props) => {
           </span>
           <select
             className="flex-1 ml-10 rounded"
+            value={finance.category}
             onChange={(e) => {
-              const idx = Number(e.target.value);
-              setFinance(state => ({...state, category: categories[idx].id}));
-              setFinance(state => ({...state, kind: categories[idx].kind}));
+              const categoryId = Number(e.target.value);
+              const findCategory = categories.find((category) => category.id === categoryId)
+              if (!findCategory) return
+              setFinance(state => ({...state, category: findCategory.id}));
+              setFinance(state => ({...state, kind: findCategory.kind}));
             }}
           >
             {categories.length > 0 && categories.map((category, idx) => {
               return (
-                <option key={idx} value={idx}>{overwriteCategoryName(category.name, category.kind, category.type)}</option>
+                <option key={idx} value={category.id}>{overwriteCategoryName(category.name, category.kind, category.type)}</option>
               )
             })}
           </select>
