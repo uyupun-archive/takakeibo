@@ -22,12 +22,14 @@ const Index = () => {
   const [categories, setCategories] = useState<Array<Category>>([]);
   const [finances, setFinances] = useState<Array<Finance>>([]);
   const [finance, setFinance] = useState<Finance>(initFinance());
+  const [selectedFinance, setSelectedFinance] = useState<Finance>(initFinance());
   const [yearMonths, setYearMonths] = useState<Array<YearMonth>>([]);
   const [yearMonth, setYearMonth] = useState<YearMonth | null>(null);
   const [totalSum, setTotalSum] = useState<number>(0);
   const [balance, setBalance] = useState<number>(0);
   const [isVisibleCreateFinanceModal, setIsVisibleCreateFinanceModal] = useState<boolean>(false);
   const [isVisibleDeleteFinanceModal, setIsVisibleDeleteFinanceModal] = useState<boolean>(false);
+  const [isVisibleUpdateFinanceModal, setIsVisibleUpdateFinanceModal] = useState<boolean>(false);
 
   const checkIsLoggedIn = () => {
     auth.onAuthStateChanged(user => {
@@ -203,8 +205,12 @@ const Index = () => {
 
       <Table
         finances={finances}
+        clickUpdateBtn={(finance) => {
+          setSelectedFinance({...finance});
+          setIsVisibleUpdateFinanceModal(true);
+        }}
         clickDeleteBtn={(finance) => {
-          setFinance({...finance});
+          setSelectedFinance({...finance});
           setIsVisibleDeleteFinanceModal(true);
         }}
         convertIdToNameOfCategory={(categoryID) => convertIdToNameOfCategory(categoryID)}
@@ -226,6 +232,7 @@ const Index = () => {
         </div>
       </div>
 
+      {/* 追加モーダル */}
       <FormModal
         finance={finance}
         categories={categories}
@@ -234,6 +241,17 @@ const Index = () => {
         onSubmit={(finance: Finance) => clickCreateFinanceBtn(finance)}
       />
 
+      {/* 編集モーダル */}
+      <FormModal
+        finance={selectedFinance}
+        categories={categories}
+        isVisible={isVisibleUpdateFinanceModal}
+        onCancel={() => setIsVisibleUpdateFinanceModal(false)}
+        // TODO: 編集処理
+        onSubmit={() => setIsVisibleUpdateFinanceModal(false)}
+      />
+
+      {/* 削除モーダル */}
       <Modal
         isVisible={isVisibleDeleteFinanceModal}
         submitBtnColor="red"
