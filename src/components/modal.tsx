@@ -33,7 +33,7 @@ const Modal = (props: Props) => {
     >
       <div className="absolute top-1/2 left-1/2 w-4/5 transform -translate-x-1/2 -translate-y-1/2 bg-white">
         <div className="p-8">{children}</div>
-        <div className="flex justify-around item-center py-6 border-t border-gray-400">
+        <div className="flex justify-around item-center p-6 border-t border-gray-400">
           <Button color="gray" onClick={() => onCancel()}>{cancelBtnText}</Button>
           <Button color={btnColor} onClick={() => onSubmit()}>{submitBtnText}</Button>
         </div>
