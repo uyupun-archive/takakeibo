@@ -7,12 +7,13 @@ import {Button} from '../components/button';
 
 interface Props {
   finances: Array<Finance>;
+  clickUpdateBtn: (finance: Finance) => void;
   clickDeleteBtn: (finance: Finance) => void;
   convertIdToNameOfCategory: (categoryId: number) => string;
 }
 
 const Table = (props: Props) => {
-  const { finances, clickDeleteBtn, convertIdToNameOfCategory } = props;
+  const { finances, clickUpdateBtn, clickDeleteBtn, convertIdToNameOfCategory } = props;
   if (finances.length <= 0) {
     return <p>該当するデータがありません。</p>;
   }
@@ -64,7 +65,14 @@ const Table = (props: Props) => {
                           )
                         }
                         <div className="text-right">
-                          <Button customClass="mr-4">編集</Button>
+                          <Button
+                            customClass="mr-4"
+                            onClick={() => {
+                              clickUpdateBtn(finance);
+                            }}
+                          >
+                            編集
+                          </Button>
                           <Button
                             color="red"
                             onClick={() => {
