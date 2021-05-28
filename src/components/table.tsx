@@ -7,17 +7,18 @@ import {Button} from '../components/button';
 
 interface Props {
   finances: Array<Finance>;
+  clickUpdateBtn: (finance: Finance) => void;
   clickDeleteBtn: (finance: Finance) => void;
   convertIdToNameOfCategory: (categoryId: number) => string;
 }
 
 const Table = (props: Props) => {
-  const { finances, clickDeleteBtn, convertIdToNameOfCategory } = props;
+  const { finances, clickUpdateBtn, clickDeleteBtn, convertIdToNameOfCategory } = props;
   if (finances.length <= 0) {
     return <p>該当するデータがありません。</p>;
   }
 
-  const [selectedRowIdx, setSelectedRowIdx] = useState<number | null>(null);
+  const [selectedFinance, setSelectedFinance] = useState<Finance | null>(null);
 
   return (
     <table className="table-fixed w-full mb-8">
@@ -36,15 +37,15 @@ const Table = (props: Props) => {
             return (
               <Fragment key={idx}>
                 <tr
-                  className={selectedRowIdx === idx ? 'cursor-pointer bg-blue-50' : 'cursor-pointer'}
+                  className={selectedFinance?.uuid === finance.uuid ? 'cursor-pointer bg-blue-50' : 'cursor-pointer'}
                   onClick={() => {
-                    if (selectedRowIdx === idx) setSelectedRowIdx(null);
-                    else setSelectedRowIdx(idx);
+                    if (selectedFinance?.uuid === finance.uuid) setSelectedFinance(null);
+                    else setSelectedFinance(finance);
                   }}
                 >
                   {/* TODO: アイコンに変える */}
                   <td className="text-center pt-4">
-                    { selectedRowIdx === idx ? '▼' : '▶︎' }
+                    { selectedFinance?.uuid === finance.uuid ? '▼' : '▶︎' }
                   </td>
                   <td className="text-center pt-4">{convertMonthDay(finance.traded_at)}</td>
                   <td className="text-center pt-4">{convertIdToNameOfCategory(finance.category)}</td>
@@ -52,7 +53,7 @@ const Table = (props: Props) => {
                   <td className="text-right pt-4">{finance.kind === Kinds.Expenditure && currency(finance.amount)}</td>
                 </tr>
                 {
-                  selectedRowIdx === idx && (
+                  selectedFinance?.uuid === finance.uuid && (
                     <tr className="bg-blue-50">
                       <td className="p-4" colSpan={5}>
                         {
@@ -64,12 +65,18 @@ const Table = (props: Props) => {
                           )
                         }
                         <div className="text-right">
-                          <Button customClass="mr-4">編集</Button>
+                          <Button
+                            customClass="mr-4"
+                            onClick={() => {
+                              clickUpdateBtn(finance);
+                            }}
+                          >
+                            編集
+                          </Button>
                           <Button
                             color="red"
                             onClick={() => {
                               clickDeleteBtn(finance);
-                              setSelectedRowIdx(null);
                             }}
                           >
                             削除

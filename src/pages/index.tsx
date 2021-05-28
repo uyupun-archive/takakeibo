@@ -10,7 +10,9 @@ import {convertYearMonth} from '../utility/date';
 import {uuid} from '../utility/uuid';
 import {Table} from '../components/table';
 import {Button} from '../components/button';
-import {LinkButton} from '../components/linkButton'
+import {LinkButton} from '../components/linkButton';
+import {Modal} from '../components/modal';
+import {FormModal} from '../components/formModal'
 
 const Index = () => {
   const router = useRouter();
@@ -20,10 +22,14 @@ const Index = () => {
   const [categories, setCategories] = useState<Array<Category>>([]);
   const [finances, setFinances] = useState<Array<Finance>>([]);
   const [finance, setFinance] = useState<Finance>(initFinance());
+  const [selectedFinance, setSelectedFinance] = useState<Finance>(initFinance());
   const [yearMonths, setYearMonths] = useState<Array<YearMonth>>([]);
   const [yearMonth, setYearMonth] = useState<YearMonth | null>(null);
   const [totalSum, setTotalSum] = useState<number>(0);
   const [balance, setBalance] = useState<number>(0);
+  const [isVisibleCreateFinanceModal, setIsVisibleCreateFinanceModal] = useState<boolean>(false);
+  const [isVisibleDeleteFinanceModal, setIsVisibleDeleteFinanceModal] = useState<boolean>(false);
+  const [isVisibleUpdateFinanceModal, setIsVisibleUpdateFinanceModal] = useState<boolean>(false);
 
   const checkIsLoggedIn = () => {
     auth.onAuthStateChanged(user => {
@@ -108,7 +114,7 @@ const Index = () => {
     setFinance(state => ({...state, uuid: uuid()}));
   };
 
-  const createFinance = async () => {
+  const createFinance = async (finance: Finance) => {
     const ym = convertYearMonth(finance.traded_at);
     const res = await financesCollectRef.doc(uid).collection(ym).doc(finance.uuid).set(finance);
     const yearMonthsDocRef = financesCollectRef.doc(uid).collection('yearMonths').doc(ym);
@@ -142,14 +148,22 @@ const Index = () => {
     return res;
   };
 
-  const clickDeleteBtn = async (finance: Finance) => {
+  const clickDeleteBtn = async () => {
     await deleteFinance(finance);
     fetchFinances();
     fetchYearMonths();
+    setIsVisibleDeleteFinanceModal(false);
   }
 
   const convertIdToNameOfCategory = (categoryId: number): string => {
     return (categories.find((category) => category.id === categoryId))?.name || ''
+  };
+
+  const clickCreateFinanceBtn = async (finance: Finance): Promise<void> => {
+    await createFinance(finance);
+    fetchFinances();
+    fetchYearMonths();
+    setIsVisibleCreateFinanceModal(false);
   };
 
   useEffect(checkIsLoggedIn, []);
@@ -160,7 +174,7 @@ const Index = () => {
 
   return (
     <div className="container mx-auto pt-8 px-4">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-8">
         {yearMonths.length > 0 && (
           <div>
             表示年月
@@ -184,50 +198,24 @@ const Index = () => {
           ログアウト
         </LinkButton>
       </div>
-      <form>
-        <label>
-          日付
-          <input type="date" value={finance.traded_at} onChange={(e) => {
-            setFinance(state => ({...state, traded_at: e.target.value}));
-          }} />
-        </label>
-        <label>
-          カテゴリ
-          <select onChange={(e) => {
-            const idx = Number(e.target.value);
-            setFinance(state => ({...state, category: categories[idx].id}));
-            setFinance(state => ({...state, kind: categories[idx].kind}));
-          }}>
-            {categories.length > 0 && categories.map((category, idx) => {
-              return (
-                <option key={idx} value={idx}>{overwriteCategoryName(category.name, category.kind, category.type)}</option>
-              )
-            })}
-          </select>
-        </label>
-        <label>
-          金額
-          <input type="number" value={finance.amount} onChange={(e) => {
-            setFinance(state => ({...state, amount: Number(e.target.value)}));
-          }} />
-        </label>
-        <label>
-          備考
-          <input type="text" value={finance.description} onChange={(e) => {
-            setFinance(state => ({...state, description: e.target.value}));
-          }} />
-        </label>
-        <Button onClick={async () => {
-          await createFinance();
-          fetchFinances();
-          fetchYearMonths();
-        }}>追加</Button>
-      </form>
+
+      <div className="text-right mb-8">
+        <Button onClick={() => setIsVisibleCreateFinanceModal(true)}>追加</Button>
+      </div>
+
       <Table
         finances={finances}
-        clickDeleteBtn={(finance) => clickDeleteBtn(finance)}
+        clickUpdateBtn={(finance) => {
+          setSelectedFinance({...finance});
+          setIsVisibleUpdateFinanceModal(true);
+        }}
+        clickDeleteBtn={(finance) => {
+          setSelectedFinance({...finance});
+          setIsVisibleDeleteFinanceModal(true);
+        }}
         convertIdToNameOfCategory={(categoryID) => convertIdToNameOfCategory(categoryID)}
       />
+
       <div className="text-right">
         <div>
           収支:&nbsp;
@@ -243,6 +231,35 @@ const Index = () => {
           <span className={totalSum < 0 ? 'text-red-500' : undefined}>{currency(totalSum)}</span>
         </div>
       </div>
+
+      {/* 追加モーダル */}
+      <FormModal
+        finance={finance}
+        categories={categories}
+        isVisible={isVisibleCreateFinanceModal}
+        onCancel={() => setIsVisibleCreateFinanceModal(false)}
+        onSubmit={(finance: Finance) => clickCreateFinanceBtn(finance)}
+      />
+
+      {/* 編集モーダル */}
+      <FormModal
+        finance={selectedFinance}
+        categories={categories}
+        isVisible={isVisibleUpdateFinanceModal}
+        onCancel={() => setIsVisibleUpdateFinanceModal(false)}
+        // TODO: 編集処理
+        onSubmit={() => setIsVisibleUpdateFinanceModal(false)}
+      />
+
+      {/* 削除モーダル */}
+      <Modal
+        isVisible={isVisibleDeleteFinanceModal}
+        submitBtnColor="red"
+        onCancel={() => setIsVisibleDeleteFinanceModal(false)}
+        onSubmit={() => clickDeleteBtn()}
+      >
+        <p>削除しますか？</p>
+      </Modal>
     </div>
   );
 };
