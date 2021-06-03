@@ -78,12 +78,6 @@ const Index = () => {
     });
   };
 
-  const overwriteCategoryName = (name: string, kind: number, type: string): string => {
-    if (kind === Kinds.Income) return `${name} [収入]`;
-    if (kind === Kinds.Expenditure) return `${name} [支出 - ${type}]`;
-    return name;
-  }
-
   const fetchFinances = () => {
     if (uid && yearMonth) {
       financesCollectRef.doc(uid).collection(yearMonth.yearMonth).orderBy('traded_at').get().then(snapshot => {
