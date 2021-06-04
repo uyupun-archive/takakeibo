@@ -237,6 +237,7 @@ const Index = () => {
         finance={finance}
         categories={categories}
         isVisible={isVisibleCreateFinanceModal}
+        mode="create"
         onCancel={() => setIsVisibleCreateFinanceModal(false)}
         onSubmit={(finance: Finance) => clickCreateFinanceBtn(finance)}
       />
@@ -246,6 +247,7 @@ const Index = () => {
         finance={selectedFinance}
         categories={categories}
         isVisible={isVisibleUpdateFinanceModal}
+        mode="update"
         onCancel={() => setIsVisibleUpdateFinanceModal(false)}
         // TODO: 編集処理
         onSubmit={() => setIsVisibleUpdateFinanceModal(false)}
