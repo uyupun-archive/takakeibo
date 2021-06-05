@@ -39,9 +39,7 @@ const FormModal = (props: Props) => {
     return options;
   }
 
-  const getFinance = (): Finance => {
-    if (mode === 'create') return finance;
-
+  const getFinanceReflectingSelectedDay = (): Finance => {
     const yearMonth = convertYearMonth(finance.traded_at);
     const shapedSelectedDay = Number(selectedDay) <= 9 ? `0${selectedDay}` : selectedDay
     return {...finance, traded_at: `${yearMonth}-${shapedSelectedDay}`}
@@ -54,7 +52,9 @@ const FormModal = (props: Props) => {
       submitText={submitText}
       submitBtnColor={submitBtnColor}
       onCancel={() => onCancel()}
-      onSubmit={() => onSubmit(getFinance())}
+      onSubmit={() => onSubmit(
+        mode === 'create' ? finance : getFinanceReflectingSelectedDay()
+      )}
     >
       <div>
         <label className="flex justify-between item-center mb-6">
