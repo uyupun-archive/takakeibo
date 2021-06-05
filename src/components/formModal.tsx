@@ -3,7 +3,7 @@ import {Finance} from '../models/finance';
 import {Category} from '../models/category';
 import {Kinds} from '../models/kinds';
 import {Modal} from './modal'
-import {convertYearMonth, convertMonthEndDay, convertDay} from '../utility/date'
+import {convertYearMonth, convertLastDay, convertDay} from '../utility/date'
 
 interface Props {
   finance: Finance;
@@ -33,7 +33,7 @@ const FormModal = (props: Props) => {
 
   const getOptions = (): Array<JSX.Element> => {
     const options = [];
-    for (let i = 1; i <= Number(convertMonthEndDay(finance.traded_at)); i++) {
+    for (let i = 1; i <= Number(convertLastDay(finance.traded_at)); i++) {
       options.push(<option key={i} value={i}>{i}</option>);
     }
     return options;

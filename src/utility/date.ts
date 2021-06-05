@@ -13,7 +13,7 @@ export const convertMonthDay = (d: string): string => {
   return `${ary[1]}-${ary[2]}`;
 };
 
-export const convertMonthEndDay = (d: string): string => {
+export const convertLastDay = (d: string): string => {
   const ary = d.split('-');
   return `${new Date(Number(ary[0]), Number(ary[1]), 0).getDate()}`;
 };
