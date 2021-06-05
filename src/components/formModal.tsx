@@ -31,7 +31,7 @@ const FormModal = (props: Props) => {
     return name;
   }
 
-  const getOptions = (): Array<JSX.Element> => {
+  const getOptionElements = (): Array<JSX.Element> => {
     const options = [];
     for (let i = 1; i <= Number(convertLastDay(finance.traded_at)); i++) {
       options.push(<option key={i} value={i}>{i}</option>);
@@ -79,7 +79,7 @@ const FormModal = (props: Props) => {
                     defaultValue={Number(convertDay(finance.traded_at))}
                     onChange={(e) => setSelectedDay(e.target.value)}
                   >
-                    {getOptions()}
+                    {getOptionElements()}
                   </select>
                 </span>
           }
