@@ -1,24 +1,23 @@
 import {useState, Fragment} from 'react';
-import {Finance} from '../models/finance';
+import {CustomFinance} from '../models/finance'
 import {Kinds} from '../models/kinds';
 import {currency} from '../utility/currency';
 import {convertMonthDay} from '../utility/date';
 import {Button} from '../components/button';
 
 interface Props {
-  finances: Array<Finance>;
-  clickUpdateBtn: (finance: Finance) => void;
-  clickDeleteBtn: (finance: Finance) => void;
-  convertIdToNameOfCategory: (categoryId: number) => string;
+  finances: Array<CustomFinance>;
+  clickUpdateBtn: (uuid: string) => void;
+  clickDeleteBtn: (uuid: string) => void;
 }
 
 const Table = (props: Props) => {
-  const { finances, clickUpdateBtn, clickDeleteBtn, convertIdToNameOfCategory } = props;
+  const { finances, clickUpdateBtn, clickDeleteBtn } = props;
   if (finances.length <= 0) {
     return <p>該当するデータがありません。</p>;
   }
 
-  const [selectedFinance, setSelectedFinance] = useState<Finance | null>(null);
+  const [selectedFinance, setSelectedFinance] = useState<CustomFinance | null>(null);
 
   return (
     <table className="table-fixed w-full mb-8">
@@ -48,7 +47,7 @@ const Table = (props: Props) => {
                     { selectedFinance?.uuid === finance.uuid ? '▼' : '▶︎' }
                   </td>
                   <td className="text-center pt-4">{convertMonthDay(finance.traded_at)}</td>
-                  <td className="text-center pt-4">{convertIdToNameOfCategory(finance.category)}</td>
+                  <td className="text-center pt-4">{finance.category}</td>
                   <td className="text-right pt-4">{finance.kind === Kinds.Income && currency(finance.amount)}</td>
                   <td className="text-right pt-4">{finance.kind === Kinds.Expenditure && currency(finance.amount)}</td>
                 </tr>
@@ -68,7 +67,7 @@ const Table = (props: Props) => {
                           <Button
                             customClass="mr-4"
                             onClick={() => {
-                              clickUpdateBtn(finance);
+                              clickUpdateBtn(finance.uuid);
                             }}
                           >
                             編集
@@ -76,7 +75,7 @@ const Table = (props: Props) => {
                           <Button
                             color="red"
                             onClick={() => {
-                              clickDeleteBtn(finance);
+                              clickDeleteBtn(finance.uuid);
                             }}
                           >
                             削除

@@ -8,7 +8,7 @@ import {YearMonth} from '../models/yearMonth';
 import {currency} from '../utility/currency';
 import {convertYearMonth} from '../utility/date';
 import {uuid} from '../utility/uuid';
-import {Table} from '../components/table';
+import {Table, CustomFinance} from '../components/table';
 import {Button} from '../components/button';
 import {LinkButton} from '../components/linkButton';
 import {Modal} from '../components/modal';
@@ -78,12 +78,6 @@ const Index = () => {
     });
   };
 
-  const overwriteCategoryName = (name: string, kind: number, type: string): string => {
-    if (kind === Kinds.Income) return `${name} [収入]`;
-    if (kind === Kinds.Expenditure) return `${name} [支出 - ${type}]`;
-    return name;
-  }
-
   const fetchFinances = () => {
     if (uid && yearMonth) {
       financesCollectRef.doc(uid).collection(yearMonth.yearMonth).orderBy('traded_at').get().then(snapshot => {
@@ -148,8 +142,8 @@ const Index = () => {
     return res;
   };
 
-  const clickDeleteBtn = async () => {
-    await deleteFinance(finance);
+  const clickDeleteBtn = async (): Promise<void> => {
+    await deleteFinance(selectedFinance);
     fetchFinances();
     fetchYearMonths();
     setIsVisibleDeleteFinanceModal(false);
@@ -166,6 +160,13 @@ const Index = () => {
     setIsVisibleCreateFinanceModal(false);
   };
 
+  const formatterFinances = (): Array<CustomFinance> => {
+    return finances.map((finance) => ({
+      ...finance,
+      category: convertIdToNameOfCategory(finance.category)
+    }));
+  };
+
   useEffect(checkIsLoggedIn, []);
   useEffect(fetchCategories, []);
   useEffect(fetchYearMonths, [uid]);
@@ -180,15 +181,18 @@ const Index = () => {
             表示年月
             <select
               className="rounded ml-3"
+              value={yearMonth?.yearMonth}
               onChange={e => {
-                const idx = Number(e.target.value)
-                setYearMonth(yearMonths[idx]);
-                fetchFinances();
+                const findYearMonth = yearMonths.find((yearMonth) => yearMonth.yearMonth === e.target.value)
+                if (findYearMonth) {
+                  setYearMonth({...findYearMonth});
+                  fetchFinances();
+                }
               }}
             >
               {yearMonths.map((ym, idx) => {
                 return (
-                  <option key={idx} value={idx}>{ym.yearMonth}</option>
+                  <option key={idx} value={ym.yearMonth}>{ym.yearMonth}</option>
                 )
               })}
             </select>
@@ -204,16 +208,21 @@ const Index = () => {
       </div>
 
       <Table
-        finances={finances}
-        clickUpdateBtn={(finance) => {
-          setSelectedFinance({...finance});
-          setIsVisibleUpdateFinanceModal(true);
+        finances={formatterFinances()}
+        clickUpdateBtn={(uuid) => {
+          const findFinance = finances.find((finance) => finance.uuid === uuid);
+          if (findFinance) {
+            setSelectedFinance({...findFinance});
+            setIsVisibleUpdateFinanceModal(true);
+          }
         }}
-        clickDeleteBtn={(finance) => {
-          setSelectedFinance({...finance});
-          setIsVisibleDeleteFinanceModal(true);
+        clickDeleteBtn={(uuid) => {
+          const findFinance = finances.find((finance) => finance.uuid === uuid);
+          if (findFinance) {
+            setSelectedFinance({...findFinance});
+            setIsVisibleDeleteFinanceModal(true);
+          }
         }}
-        convertIdToNameOfCategory={(categoryID) => convertIdToNameOfCategory(categoryID)}
       />
 
       <div className="text-right">
