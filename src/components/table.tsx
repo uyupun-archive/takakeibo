@@ -1,17 +1,9 @@
 import {useState, Fragment} from 'react';
+import {CustomFinance} from '../models/finance'
 import {Kinds} from '../models/kinds';
 import {currency} from '../utility/currency';
 import {convertMonthDay} from '../utility/date';
 import {Button} from '../components/button';
-
-export interface CustomFinance {
-  uuid: string;
-  category: string;
-  kind: number;
-  amount: number;
-  description: string;
-  traded_at: string;
-}
 
 interface Props {
   finances: Array<CustomFinance>;

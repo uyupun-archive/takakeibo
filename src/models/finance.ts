@@ -18,3 +18,12 @@ export const initFinance = (): Finance => {
     traded_at: today(),
   };
 };
+
+export interface CustomFinance {
+  uuid: string;
+  category: string;
+  kind: number;
+  amount: number;
+  description: string;
+  traded_at: string;
+}
