@@ -39,7 +39,7 @@ const FormModal = (props: Props) => {
     return options;
   }
 
-  const getFinanceReflectingSelectedDay = (): Finance => {
+  const getSelectedFinance = (): Finance => {
     const yearMonth = convertYearMonth(finance.traded_at);
     const shapedSelectedDay = Number(selectedDay) <= 9 ? `0${selectedDay}` : selectedDay
     return {...finance, traded_at: `${yearMonth}-${shapedSelectedDay}`}
@@ -53,7 +53,7 @@ const FormModal = (props: Props) => {
       submitBtnColor={submitBtnColor}
       onCancel={() => onCancel()}
       onSubmit={() => onSubmit(
-        mode === 'create' ? finance : getFinanceReflectingSelectedDay()
+        mode === 'create' ? finance : getSelectedFinance()
       )}
     >
       <div>
