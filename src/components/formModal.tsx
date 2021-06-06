@@ -51,7 +51,7 @@ const FormModal = (props: Props) => {
       cancelText={cancelText}
       submitText={submitText}
       submitBtnColor={submitBtnColor}
-      submitBtnDisabled={!(finance.traded_at && finance.category && finance.amount)}
+      canSubmit={!(finance.traded_at && finance.category && finance.amount)}
       onCancel={() => onCancel()}
       onSubmit={() => onSubmit(
         mode === 'create' ? finance : getSelectedFinance()

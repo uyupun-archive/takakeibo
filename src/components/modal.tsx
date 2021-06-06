@@ -7,13 +7,13 @@ interface Props {
   cancelText?: string;
   submitText?: string;
   submitBtnColor?: 'blue' | 'red';
-  submitBtnDisabled?: boolean;
+  canSubmit?: boolean;
   onCancel: () => void;
   onSubmit: () => void;
 }
 
 const Modal = (props: Props) => {
-  const { children, isVisible, cancelText, submitText, submitBtnColor, submitBtnDisabled, onCancel, onSubmit } = props;
+  const { children, isVisible, cancelText, submitText, submitBtnColor, canSubmit, onCancel, onSubmit } = props;
 
   if (!isVisible) return null;
 
@@ -36,7 +36,7 @@ const Modal = (props: Props) => {
         <div className="p-8">{children}</div>
         <div className="flex justify-around item-center p-6 border-t border-gray-400">
           <Button color="gray" onClick={() => onCancel()}>{cancelBtnText}</Button>
-          <Button color={btnColor} disabled={submitBtnDisabled} onClick={() => onSubmit()}>{submitBtnText}</Button>
+          <Button color={btnColor} disabled={canSubmit} onClick={() => onSubmit()}>{submitBtnText}</Button>
         </div>
       </div>
     </div>
