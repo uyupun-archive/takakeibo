@@ -42,7 +42,7 @@ const Index = () => {
     auth.signOut();
   };
 
-  const fetchYearMonths = () => {
+  const fetchYearMonths = (optionalYearMonth: string | undefined = undefined) => {
     if (uid) {
       financesCollectRef.doc(uid).collection('yearMonths').get().then(snapshot => {
         const yearMonths: Array<YearMonth> = [];
@@ -55,7 +55,12 @@ const Index = () => {
           totalSum += data.total;
         });
         setYearMonths(yearMonths.reverse());
-        setYearMonth(yearMonths[0]);
+        const findYearMonth = yearMonths.find((yearMonth) => yearMonth.yearMonth === optionalYearMonth)
+        if (findYearMonth) {
+          setYearMonth(findYearMonth);
+        } else {
+          setYearMonth(yearMonths[0]);
+        }
         setTotalSum(totalSum);
       });
     }
@@ -78,9 +83,9 @@ const Index = () => {
     });
   };
 
-  const fetchFinances = () => {
+  const fetchFinances = (optionalYearMonth: string | undefined = undefined) => {
     if (uid && yearMonth) {
-      financesCollectRef.doc(uid).collection(yearMonth.yearMonth).orderBy('traded_at').get().then(snapshot => {
+      financesCollectRef.doc(uid).collection(optionalYearMonth || yearMonth.yearMonth).orderBy('traded_at').get().then(snapshot => {
         const finances: Array<Finance> = [];
         snapshot.forEach(doc => {
           if (!doc.exists) return;
@@ -144,8 +149,8 @@ const Index = () => {
 
   const clickDeleteBtn = async (): Promise<void> => {
     await deleteFinance(selectedFinance);
-    fetchFinances();
-    fetchYearMonths();
+    fetchYearMonths(convertYearMonth(selectedFinance.traded_at));
+    fetchFinances(convertYearMonth(selectedFinance.traded_at));
     setIsVisibleDeleteFinanceModal(false);
   }
 
@@ -155,8 +160,8 @@ const Index = () => {
 
   const clickCreateFinanceBtn = async (finance: Finance): Promise<void> => {
     await createFinance(finance);
-    fetchFinances();
-    fetchYearMonths();
+    fetchYearMonths(convertYearMonth(finance.traded_at));
+    fetchFinances(convertYearMonth(finance.traded_at));
     setIsVisibleCreateFinanceModal(false);
   };
 
