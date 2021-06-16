@@ -4,6 +4,11 @@
 
 ## 環境構築
 
+### 管理操作
+
+- Firestoreの新規構築時に必要
+- [admin](./admin/README.md) を参照
+
 ### 開発環境
 
 ```bash
@@ -31,10 +36,6 @@ $ make down
 # プロセスの確認
 $ make ps
 ```
-
-### 管理操作
-
-- [admin](./admin/README.md) を参照
 
 ### 使用技術
 
