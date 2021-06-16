@@ -9,10 +9,15 @@ class Migration {
   private batch: firestore.WriteBatch;
 
   constructor() {
-    dotenv.config();
+    const env = process.argv[2];
     let serviceAccount = require('./serviceAccountKeyDev.json');
-    if (process.env.ENV === 'production')
+    if (env === 'prod') {
+      dotenv.config({path: './.env.production'});
       serviceAccount = require('./serviceAccountKeyProd.json');
+    } else {
+      dotenv.config({path: './.env.development'});
+    }
+
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
       databaseURL: process.env.DATABASE_URL
