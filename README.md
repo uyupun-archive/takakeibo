@@ -1,3 +1,5 @@
+[![Deploy](https://github.com/uyupun/takakeibo/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/uyupun/takakeibo/actions/workflows/main.yml)
+
 <img src="public/logo.png" width="200px">
 
 **Easily & Simply & Immediately**
