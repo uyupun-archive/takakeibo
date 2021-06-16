@@ -1,4 +1,4 @@
-import {useEffect, useState, Fragment} from 'react';
+import {useEffect, useState} from 'react';
 import {useRouter} from 'next/router';
 import firebase, {auth, db} from '../lib/firebase';
 import {Category} from '../models/category';
@@ -132,6 +132,11 @@ const Index = () => {
     return res;
   };
 
+  const updateFinance = async (finance: Finance) => {
+    const ym = convertYearMonth(finance.traded_at);
+    await financesCollectRef.doc(uid).collection(ym).doc(finance.uuid).update(finance);
+  };
+
   const deleteFinance = async (finance: Finance) => {
     const ym = convertYearMonth(finance.traded_at);
     const res = await financesCollectRef.doc(uid).collection(ym).doc(finance.uuid).delete();
@@ -147,7 +152,21 @@ const Index = () => {
     return res;
   };
 
-  const clickDeleteBtn = async (): Promise<void> => {
+  const clickCreateFinanceBtn = async (finance: Finance): Promise<void> => {
+    await createFinance(finance);
+    fetchYearMonths(convertYearMonth(finance.traded_at));
+    fetchFinances(convertYearMonth(finance.traded_at));
+    setIsVisibleCreateFinanceModal(false);
+  };
+
+  const clickUpdateFinanceBtn = async (finance: Finance): Promise<void> => {
+    await updateFinance(finance);
+    fetchYearMonths(convertYearMonth(finance.traded_at));
+    fetchFinances(convertYearMonth(finance.traded_at));
+    setIsVisibleUpdateFinanceModal(false);
+  };
+
+  const clickDeleteFinanceBtn = async (): Promise<void> => {
     await deleteFinance(selectedFinance);
     fetchYearMonths(convertYearMonth(selectedFinance.traded_at));
     fetchFinances(convertYearMonth(selectedFinance.traded_at));
@@ -156,13 +175,6 @@ const Index = () => {
 
   const convertIdToNameOfCategory = (categoryId: number): string => {
     return (categories.find((category) => category.id === categoryId))?.name || ''
-  };
-
-  const clickCreateFinanceBtn = async (finance: Finance): Promise<void> => {
-    await createFinance(finance);
-    fetchYearMonths(convertYearMonth(finance.traded_at));
-    fetchFinances(convertYearMonth(finance.traded_at));
-    setIsVisibleCreateFinanceModal(false);
   };
 
   const formatterFinances = (): Array<CustomFinance> => {
@@ -263,8 +275,7 @@ const Index = () => {
         isVisible={isVisibleUpdateFinanceModal}
         mode="update"
         onCancel={() => setIsVisibleUpdateFinanceModal(false)}
-        // TODO: 編集処理
-        onSubmit={() => setIsVisibleUpdateFinanceModal(false)}
+        onSubmit={(finance: Finance) => clickUpdateFinanceBtn(finance)}
       />
 
       {/* 削除モーダル */}
@@ -272,7 +283,7 @@ const Index = () => {
         isVisible={isVisibleDeleteFinanceModal}
         submitBtnColor="red"
         onCancel={() => setIsVisibleDeleteFinanceModal(false)}
-        onSubmit={() => clickDeleteBtn()}
+        onSubmit={() => clickDeleteFinanceBtn()}
       >
         <p>削除しますか？</p>
       </Modal>
