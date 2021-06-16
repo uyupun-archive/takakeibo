@@ -1,25 +1,40 @@
 version: '3'
 
 services:
-  nginx:
-    container_name: nginx
-    hostname: nginx
-    image: nginx:stable
+  reverse_proxy:
+    env_file:
+      - .env.production
+      - .env.production.local
+    container_name: takakeibo_reverse_proxy
+    hostname: takakeibo_reverse_proxy
+    image: nginx:alpine
     ports:
-      - 8080:80
+      - ${REVERSE_PROXY_EXPOSE_PORT}:80
     volumes:
       - ./docker/nginx/conf.d:/etc/nginx/conf.d
       - ./docker/nginx/.htpasswd:/etc/nginx/.htpasswd
+    command: >
+      /bin/sh -c "
+        envsubst '$$APP_PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf &&
+        envsubst '$$BASIC_AUTH_USER $$BASIC_AUTH_PASSWORD' < /etc/nginx/.htpasswd.template > /etc/nginx/.htpasswd &&
+        nginx -g 'daemon off;'"
+    restart: always
     depends_on:
-      - express
+      - app
 
-  express:
-    container_name: express
-    hostname: express
-    image: node:14.16.1-alpine
+  app:
+    env_file:
+      - .env.local
+      - .env.production
+    container_name: takakeibo_app
+    hostname: takakeibo_app
+    build:
+      context: .
+      dockerfile: ./docker/app/Dockerfile
     ports:
-      - 3000:3000
-    volumes:
-      - .:/src
-    working_dir: /src
-    command: [sh, -c, npm install && npm run build && npm run start]
+      - ${APP_EXPOSE_PORT}:${APP_PORT}
+    restart: always
+
+networks:
+  default:
+    name: takakeibo_network
