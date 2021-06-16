@@ -39,7 +39,7 @@ $ make down
 $ make ps
 ```
 
-### 使用技術
+### アーキテクチャ
 
 <img src="architecture.png" width="700px">
 
