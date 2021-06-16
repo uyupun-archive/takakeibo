@@ -6,8 +6,8 @@
 
 ```bash
 $ yarn install
-$ cp .env.example .env
-$ cp .env.local.example .env.local # その後、Firebaseの認証情報を追記する
+# 実行後、Firebaseの認証情報を追記する
+$ cp .env.local.example .env.local
 $ yarn dev
 ```
 
@@ -18,7 +18,16 @@ $ yarn dev
   - パスワード: `takashiasuka`
 
 ```bash
-$ docker-compose up -d # 8080番ポートで待ち受け
+# 実行後、Firebaseの認証情報を追記する
+$ cp .env.local.example .env.local
+# 実行後、Basic認証の認証情報を追記する
+$ cp .env.production.local.example .env.production.local
+# サーバの起動
+$ make up
+# サーバの終了
+$ make down
+# プロセスの確認
+$ make ps
 ```
 
 ### 使用技術
