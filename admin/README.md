@@ -7,7 +7,8 @@
 
 ```bash
 $ yarn install
-$ cp .env.example .env # その後、Firebaseの認証情報を追記する
+# その後、.envにFirebaseの認証情報を追記する
+$ cp .env.example .env
 ```
 
 ### 初期データの流し込み

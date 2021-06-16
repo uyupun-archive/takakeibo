@@ -2,6 +2,8 @@
 
 **Easily & Simply & Immediately**
 
+## 環境構築
+
 ### 開発環境
 
 ```bash
@@ -29,6 +31,10 @@ $ make down
 # プロセスの確認
 $ make ps
 ```
+
+### DBマイグレーション
+
+- DBマイグレーションは[admin](./admin/README.md)を参照
 
 ### 使用技術
 
