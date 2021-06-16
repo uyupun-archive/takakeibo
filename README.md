@@ -32,9 +32,9 @@ $ make down
 $ make ps
 ```
 
-### DBマイグレーション
+### 管理操作
 
-- DBマイグレーションは[admin](./admin/README.md)を参照
+- [admin](./admin/README.md) を参照
 
 ### 使用技術
 
