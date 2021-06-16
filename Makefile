@@ -1,4 +1,4 @@
-.PHONY:
+.PHONY: ps down
 
 up:
 	docker-compose --env-file ./.env.production build --no-cache
