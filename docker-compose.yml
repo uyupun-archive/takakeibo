@@ -30,7 +30,7 @@ services:
     hostname: takakeibo_app
     build:
       context: .
-      dockerfile: ./docker/app/Dockerfile
+      dockerfile: ./docker/app/app.Dockerfile
     ports:
       - ${APP_EXPOSE_PORT}:${APP_PORT}
     restart: always
