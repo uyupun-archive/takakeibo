@@ -39,7 +39,7 @@ $ make ps
 
 ### 使用技術
 
-<img src="tech.png" width="500px">
+<img src="architecture.png" width="700px">
 
 ### リンク
 
