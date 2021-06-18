@@ -43,7 +43,7 @@ const Login = () => {
             onChange={e => setEmail(e.target.value)}
           />
         </label>
-        <label className="flex justify-between items-center mb-8">
+        <label className={`flex justify-between items-center ${errMsg ? 'mb-4' : 'mb-8'}`}>
           <span className="w-48 whitespace-nowrap">パスワード</span>
           <input
             type="password"
@@ -51,6 +51,9 @@ const Login = () => {
             onChange={e => setPassword(e.target.value)}
           />
         </label>
+        {errMsg && (
+          <p className="text-red-500 text-center mb-8">{ errMsg }</p>
+        )}
         <div className="text-center">
           <Button
             size="medium"
@@ -59,9 +62,6 @@ const Login = () => {
               ログイン
           </Button>
         </div>
-        {errMsg && (
-          <p>{ errMsg }</p>
-        )}
       </form>
     </div>
   )
